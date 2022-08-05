@@ -12,7 +12,7 @@ export const anomalyCaseService = {
     attachmentRepository: database.getRepository(AnomalyCaseAttachment),
 
     /**
-     * List all anomaly cases with options to sort and filter
+     * List all anomaly cases with options to sort and filter (WIP)
      */
     async list(): Promise<AnomalyCase[]> {
         return this.caseRepository.find()
@@ -23,7 +23,21 @@ export const anomalyCaseService = {
      * @param id
      */
     async getCaseById(id: number): Promise<AnomalyCase | null> {
-        return this.caseRepository.findOneBy({ id })
+        return this.caseRepository.findOne({
+            where: {
+                id
+            },
+            relations: {
+                createdBy: true,
+                updatedBy: true,
+                caseStatus: true,
+                caseType: true,
+                cameraView: true,
+                viewportPosition: true,
+                closedBy: true,
+                conclusionCategory: true
+            }
+        })
     },
 
     /**
@@ -44,7 +58,7 @@ export const anomalyCaseService = {
             throw new Error('Case must include an `id`')
         }
 
-        const existingCase = await this.caseRepository.findOneBy({ id: anomaly.id })
+        const existingCase = await this.getCaseById(anomaly.id)
 
         if (!existingCase) {
             throw new Error(`No case exists with id: ${anomaly.id}`)

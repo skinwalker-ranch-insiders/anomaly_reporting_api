@@ -18,7 +18,7 @@ export const database = new DataSource({
     port: 5432,
     username: 'postgres',
     password: 'postgres',
-    database: 'swr_anomalies',
+    database: 'postgres',
     synchronize: true,
     logging: true,
     entities: [

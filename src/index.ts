@@ -2,6 +2,7 @@ import './bootstrap'
 
 import logger from 'jet-logger'
 import { createServer } from './server'
+import {database} from "./database";
 
 const port = process.env.PORT ?? 3000
 
@@ -14,8 +15,12 @@ function main(args: string[]) {
             : 'Application starting'
     )
 
-    server.listen(port, () => {
-        logger.info(`Server started on port: ${port}`)
+    database.initialize().then(() => {
+        logger.info('Database initialized')
+
+        server.listen(port, () => {
+            logger.info(`Server started on port: ${port}`)
+        })
     })
 }
 

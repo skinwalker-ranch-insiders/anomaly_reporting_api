@@ -8,8 +8,8 @@ export class Insider {
     @PrimaryGeneratedColumn({ name: 'insider_id' })
     id: number
 
-    @Column({ name: 'swr_email' })
-    swrEmail: string
+    @Column({ name: 'email' })
+    email: string
 
     @Column({ name: 'name' })
     name: string

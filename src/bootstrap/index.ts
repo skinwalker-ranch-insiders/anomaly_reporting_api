@@ -1,4 +1,5 @@
 import 'reflect-metadata'
+import 'express-async-errors'
 
 import path from 'path'
 import dotenv from 'dotenv'
