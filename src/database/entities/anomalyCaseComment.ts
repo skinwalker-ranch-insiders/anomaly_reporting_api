@@ -12,7 +12,7 @@ import { AnomalyCase } from './anomalyCase'
 import { Insider } from './insider'
 
 @Entity({ name: 'anomaly_case_comments' })
-export class AnomalyCaseComments {
+export class AnomalyCaseComment {
 
     @PrimaryGeneratedColumn({ name: 'anomaly_case_comment_id' })
     id: number

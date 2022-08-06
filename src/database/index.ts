@@ -3,7 +3,7 @@ import { DataSource } from 'typeorm'
 import { AnomalyCase } from './entities/anomalyCase'
 import { AnomalyCaseComments } from './entities/anomalyCaseComment'
 import { AnomalyCaseAttachment } from './entities/anomalyCaseAttachment'
-import { AnomalyCaseLikes } from './entities/anomalyCaseLikes'
+import { AnomalyCaseLike } from './entities/anomalyCaseLike'
 import { CameraView } from './entities/cameraView'
 import { CaseStatus } from './entities/caseStatus'
 import { CaseType } from './entities/caseType'
@@ -26,7 +26,7 @@ export const database = new DataSource({
         AnomalyCase,
         AnomalyCaseComments,
         AnomalyCaseAttachment,
-        AnomalyCaseLikes,
+        AnomalyCaseLike,
         CameraView,
         CaseStatus,
         CaseType,
