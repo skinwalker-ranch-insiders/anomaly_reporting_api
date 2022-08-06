@@ -1,5 +1,7 @@
 import { NextFunction, Request, RequestHandler, Response, Router } from 'express'
 
+import { HttpMethod } from './enum'
+
 interface AsyncMiddleware extends RequestHandler {
     (request: Request, response: Response, next: NextFunction): Promise<void>
 }
@@ -29,19 +31,19 @@ function define(method: string, path: string, middleware: AsyncMiddleware[], han
 }
 
 export function get(path: string, middleware: AsyncMiddleware[], handler: AsyncRequestHandler): RouteDefinition {
-    return define('GET', path, middleware, handler)
+    return define(HttpMethod.Get, path, middleware, handler)
 }
 
 export function patch(path: string, middleware: AsyncMiddleware[], handler: AsyncRequestHandler): RouteDefinition {
-    return define('PATCH', path, middleware, handler)
+    return define(HttpMethod.Patch, path, middleware, handler)
 }
 
 export function post(path: string, middleware: AsyncMiddleware[], handler: AsyncRequestHandler): RouteDefinition {
-    return define('POST', path, middleware, handler)
+    return define(HttpMethod.Post, path, middleware, handler)
 }
 
 export function del(path: string, middleware: AsyncMiddleware[], handler: AsyncRequestHandler): RouteDefinition {
-    return define('DELETE', path, middleware, handler)
+    return define(HttpMethod.Delete, path, middleware, handler)
 }
 
 export function createRouter<Base extends string>(base: Base, middleware: AsyncMiddleware[], routes: RouteDefinition[]): RouterWithBasePath<Base> {
@@ -54,16 +56,16 @@ export function createRouter<Base extends string>(base: Base, middleware: AsyncM
 
     for (const route of routes) {
         switch (route.method) {
-            case 'GET':
+            case HttpMethod.Get:
                 router.get(route.path, route.middleware, route.handler)
                 break
-            case 'PATCH':
+            case HttpMethod.Patch:
                 router.patch(route.path, route.middleware, route.handler)
                 break
-            case 'POST':
+            case HttpMethod.Post:
                 router.post(route.path, route.middleware, route.handler)
                 break
-            case 'DELETE':
+            case HttpMethod.Delete:
                 router.delete(route.path, route.middleware, route.handler)
         }
     }

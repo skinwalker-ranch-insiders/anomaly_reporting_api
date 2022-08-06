@@ -1,6 +1,7 @@
 import { UserCredentials } from '../payloads/userCredentials'
 import { AuthedUser } from '../payloads/authedUser'
 import { parseCookies, formData, request } from '../utilities/request'
+import { HttpMethod } from '../utilities/enum'
 import { insidersService } from './insidersService'
 
 export const swrService = {
@@ -15,7 +16,7 @@ export const swrService = {
         })
 
         const response = await request('https://skinwalker-ranch.com/login/', {
-            method: 'POST',
+            method: HttpMethod.Post,
             headers: body.getHeaders(),
             data: body,
             withCredentials: true,
