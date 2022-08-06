@@ -1,5 +1,4 @@
-import fetch, { Headers } from 'node-fetch'
-import axios, {AxiosResponseHeaders} from 'axios'
+import axios, { AxiosResponseHeaders } from 'axios'
 import FormData from 'form-data'
 
 interface CookieMap {
@@ -12,7 +11,7 @@ interface CookieMap {
     }
 }
 
-export function cookies(headers: AxiosResponseHeaders): CookieMap {
+export function parseCookies(headers: AxiosResponseHeaders): CookieMap {
     const rawCookies = headers['set-cookie']
 
     if (!rawCookies) {

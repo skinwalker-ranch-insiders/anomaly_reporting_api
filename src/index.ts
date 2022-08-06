@@ -1,19 +1,15 @@
 import './bootstrap'
 
-import logger from 'jet-logger'
+import { database } from './database'
 import { createServer } from './server'
-import {database} from "./database";
+import { logger } from './util/misc'
 
 const port = process.env.PORT ?? 3000
 
 function main(args: string[]) {
     const server = createServer()
 
-    logger.info(
-        args.length > 0
-            ? `Application starting with args: ${args.join(', ')}`
-            : 'Application starting'
-    )
+    logger.info(`Application starting with args: ${args.join(', ')}`)
 
     database.initialize().then(() => {
         logger.info('Database initialized')

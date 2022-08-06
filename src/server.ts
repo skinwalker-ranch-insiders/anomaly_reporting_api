@@ -1,15 +1,16 @@
 import express from 'express'
 import helmet from 'helmet'
-import http, { Server } from 'http'
+import http from 'http'
 import morgan from 'morgan'
 import path from 'path'
+import bodyParser from 'body-parser'
 
+import { authRoutes } from './routes/authRoutes'
 import { anomalyCaseRoutes } from './routes/anomalyCaseRoutes'
-import {insidersRoutes} from "./routes/insidersRoutes";
-import bodyParser from "body-parser";
-import {authRoutes} from "./routes/authRoutes";
+import { insidersRoutes } from './routes/insidersRoutes'
+import { isProdEnv } from './util/misc'
 
-export function createServer(): Server {
+export function createServer(): http.Server {
     const app = express()
 
     app.use(express.json())
@@ -17,7 +18,7 @@ export function createServer(): Server {
     app.use(express.static(path.join(__dirname, 'public')))
     app.use(bodyParser.json())
 
-    if (process.env.NODE_ENV === 'production') {
+    if (isProdEnv()) {
         app.use(helmet())
     } else {
         app.use(morgan('dev'))

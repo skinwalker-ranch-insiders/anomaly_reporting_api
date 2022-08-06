@@ -12,6 +12,8 @@ import { Insider } from './entities/insider'
 import { Role } from './entities/role'
 import { ViewportPosition } from './entities/viewportPosition'
 
+import { SeedRolesMigration } from './migrations/seedRolesMigration'
+
 export const database = new DataSource({
     type: 'postgres',
     host: 'localhost',
@@ -20,7 +22,6 @@ export const database = new DataSource({
     password: 'postgres',
     database: 'postgres',
     synchronize: true,
-    logging: true,
     entities: [
         AnomalyCase,
         AnomalyCaseComments,
@@ -34,4 +35,8 @@ export const database = new DataSource({
         Role,
         ViewportPosition
     ],
+    migrationsRun: true,
+    migrations: [
+        SeedRolesMigration
+    ]
 })

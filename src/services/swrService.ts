@@ -1,6 +1,6 @@
 import { UserCredentials } from '../payloads/userCredentials'
 import { AuthedUser } from '../payloads/authedUser'
-import { cookies, formData, request } from '../util/request'
+import { parseCookies, formData, request } from '../util/request'
 import { insidersService } from './insidersService'
 
 export const swrService = {
@@ -29,7 +29,7 @@ export const swrService = {
             throw new Error('Invalid credentials')
         }
 
-        const cookieMap = cookies(response.headers)
+        const cookieMap = parseCookies(response.headers)
         const wordpressLoggedInCookie = Object.entries(cookieMap)
             .find(([name]) => name.startsWith('wordpress_logged_in'))?.[1]
 
