@@ -1,5 +1,5 @@
 import { insidersService } from '../services/insidersService'
-import { createRouter, get } from '../util/router'
+import { createRouter, get } from '../utilities/router'
 
 export const insidersRoutes = createRouter('/insiders', [
     get('/:insider_id', async (request, response) => {

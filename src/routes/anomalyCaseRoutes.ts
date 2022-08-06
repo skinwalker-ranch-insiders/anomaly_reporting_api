@@ -1,5 +1,5 @@
 import { anomalyCaseService } from '../services/anomalyCaseService'
-import { createRouter, get } from '../util/router'
+import { createRouter, get } from '../utilities/router'
 
 export const anomalyCaseRoutes = createRouter('/anomaly_cases', [
     get('/', async (request, response) => {

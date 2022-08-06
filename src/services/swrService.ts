@@ -1,6 +1,6 @@
 import { UserCredentials } from '../payloads/userCredentials'
 import { AuthedUser } from '../payloads/authedUser'
-import { parseCookies, formData, request } from '../util/request'
+import { parseCookies, formData, request } from '../utilities/request'
 import { insidersService } from './insidersService'
 
 export const swrService = {

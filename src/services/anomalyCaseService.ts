@@ -5,7 +5,7 @@ import { AnomalyCase } from '../database/entities/anomalyCase'
 import { AnomalyCaseAttachment } from '../database/entities/anomalyCaseAttachment'
 
 /**
- * Includes service calls to retrieve anomaly cases from the database
+ * Includes service calls to create and retrieve anomaly cases from the database
  */
 export const anomalyCaseService = {
     caseRepository: database.getRepository(AnomalyCase),

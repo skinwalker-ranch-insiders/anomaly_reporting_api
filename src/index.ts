@@ -2,7 +2,7 @@ import './bootstrap'
 
 import { database } from './database'
 import { createServer } from './server'
-import { logger } from './util/misc'
+import { logger } from './utilities/misc'
 
 const port = process.env.PORT ?? 3000
 

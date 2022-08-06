@@ -1,5 +1,6 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
+import { RoleName } from '../../utilities/enum'
 import { Role } from '../entities/role'
 
 class SeedRolesMigration1659753027275 implements MigrationInterface {
@@ -8,10 +9,10 @@ class SeedRolesMigration1659753027275 implements MigrationInterface {
         await queryRunner.startTransaction()
         try {
             await queryRunner.manager.save([
-                queryRunner.manager.create(Role, { name: 'Admin' }),
-                queryRunner.manager.create(Role, { name: 'SWR Team' }),
-                queryRunner.manager.create(Role, { name: 'Reviewer' }),
-                queryRunner.manager.create(Role, { name: 'Member' })
+                queryRunner.manager.create(Role, { name: RoleName.Admin }),
+                queryRunner.manager.create(Role, { name: RoleName.SWRTeam }),
+                queryRunner.manager.create(Role, { name: RoleName.Reviewer }),
+                queryRunner.manager.create(Role, { name: RoleName.Member })
             ])
             await queryRunner.commitTransaction()
         } catch {

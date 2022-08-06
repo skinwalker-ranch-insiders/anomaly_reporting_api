@@ -2,8 +2,13 @@ import { DeepPartial } from 'typeorm'
 
 import { database } from '../database'
 import { Insider } from '../database/entities/insider'
-import { notIn } from '../util/misc'
+import { RoleName } from '../utilities/enum'
+import { notIn } from '../utilities/misc'
+import { dataOptionsService } from './dataOptionsService'
 
+/**
+ * Includes service calls to create and retrieve insiders from the database
+ */
 export const insidersService = {
     insidersRepository: database.getRepository(Insider),
 
@@ -50,6 +55,9 @@ export const insidersService = {
         }
         if (notIn(insider, 'avatarUrl')) {
             insider.avatarUrl = ''
+        }
+        if (notIn(insider, 'role')) {
+            insider.role = await dataOptionsService.getRoleByName(RoleName.Member) ?? undefined
         }
         return this.insidersRepository.save(this.insidersRepository.create(insider))
     }

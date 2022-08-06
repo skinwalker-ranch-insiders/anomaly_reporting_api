@@ -8,7 +8,7 @@ import bodyParser from 'body-parser'
 import { authRoutes } from './routes/authRoutes'
 import { anomalyCaseRoutes } from './routes/anomalyCaseRoutes'
 import { insidersRoutes } from './routes/insidersRoutes'
-import { isProdEnv } from './util/misc'
+import { isProdEnv } from './utilities/misc'
 
 export function createServer(): http.Server {
     const app = express()
