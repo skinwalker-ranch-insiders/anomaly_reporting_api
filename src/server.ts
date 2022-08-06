@@ -5,16 +5,16 @@ import morgan from 'morgan'
 import path from 'path'
 import bodyParser from 'body-parser'
 
-import { authRoutes } from './routes/authRoutes'
-import { anomalyCaseRoutes } from './routes/anomalyCaseRoutes'
-import { insidersRoutes } from './routes/insidersRoutes'
+import { authRouter } from './routes/authRouter'
+import { anomalyCaseRouter } from './routes/anomalyCaseRouter'
+import { insidersRouter } from './routes/insidersRouter'
 import { isProdEnv } from './utilities/misc'
 
 export function createServer(): http.Server {
     const app = express()
 
     app.use(express.json())
-    app.use(express.urlencoded({extended: true}))
+    app.use(express.urlencoded({ extended: true }))
     app.use(express.static(path.join(__dirname, 'public')))
     app.use(bodyParser.json())
 
@@ -24,9 +24,9 @@ export function createServer(): http.Server {
         app.use(morgan('dev'))
     }
 
-    app.use('/api/v1' + authRoutes.base, authRoutes)
-    app.use('/api/v1' + anomalyCaseRoutes.base, anomalyCaseRoutes)
-    app.use('/api/v1' + insidersRoutes.base, insidersRoutes)
+    app.use('/api/v1' + authRouter.base, authRouter)
+    app.use('/api/v1' + anomalyCaseRouter.base, anomalyCaseRouter)
+    app.use('/api/v1' + insidersRouter.base, insidersRouter)
 
     return http.createServer(app)
 }
