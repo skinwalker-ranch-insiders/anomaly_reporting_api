@@ -1,42 +1,45 @@
 import { DataSource } from 'typeorm'
 
-import { AnomalyCase } from './entities/anomalyCase'
-import { AnomalyCaseComments } from './entities/anomalyCaseComment'
-import { AnomalyCaseAttachment } from './entities/anomalyCaseAttachment'
-import { AnomalyCaseLike } from './entities/anomalyCaseLike'
-import { CameraView } from './entities/cameraView'
-import { CaseStatus } from './entities/caseStatus'
-import { CaseType } from './entities/caseType'
-import { ConclusionCategory } from './entities/conclusionCategory'
+import { env } from '../utilities/misc'
 import { Insider } from './entities/insider'
-import { Role } from './entities/role'
-import { ViewportPosition } from './entities/viewportPosition'
-
+import { InsiderRole } from './entities/insiderRole'
+import { ObservedEvent } from './entities/observedEvent'
+import { ObservedEventAttachment } from './entities/observedEventAttachment'
+import { ObservedEventCameraView } from './entities/observedEventCameraView'
+import { ObservedEventComment } from './entities/observedEventComment'
+import { ObservedEventLike } from './entities/observedEventLike'
+import { ObservedEventStatus } from './entities/observedEventStatus'
+import { ObservedEventType } from './entities/observedEventType'
+import { ObservedEventTypeCategory } from './entities/observedEventTypeCategory'
+import { ObservedEventViewportPosition } from './entities/observedEventViewportPosition'
 import { SeedRolesMigration } from './migrations/seedRolesMigration'
+import { SeedEventTypesMigration } from './migrations/seedEventTypesMigration'
 
 export const database = new DataSource({
     type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: 'postgres',
-    password: 'postgres',
-    database: 'postgres',
+    host: env('POSTGRES_HOST', 'localhost'),
+    port: Number.parseInt(env('POSTGRES_PORT', '5432')),
+    username: env('POSTGRES_USERNAME', 'postgres'),
+    password: env('POSTGRES_PASSWORD', 'postgres'),
+    database: env('POSTGRES_DATABASE', 'postgres'),
+    schema: env('POSTGRES_SCHEMA', 'swr_event_reports'),
     synchronize: true,
     entities: [
-        AnomalyCase,
-        AnomalyCaseComments,
-        AnomalyCaseAttachment,
-        AnomalyCaseLike,
-        CameraView,
-        CaseStatus,
-        CaseType,
-        ConclusionCategory,
         Insider,
-        Role,
-        ViewportPosition
+        InsiderRole,
+        ObservedEvent,
+        ObservedEventAttachment,
+        ObservedEventCameraView,
+        ObservedEventComment,
+        ObservedEventLike,
+        ObservedEventStatus,
+        ObservedEventType,
+        ObservedEventTypeCategory,
+        ObservedEventViewportPosition
     ],
     migrationsRun: true,
     migrations: [
-        SeedRolesMigration
+        SeedRolesMigration,
+        SeedEventTypesMigration,
     ]
 })

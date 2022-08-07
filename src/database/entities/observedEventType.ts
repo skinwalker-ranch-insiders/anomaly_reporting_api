@@ -1,9 +1,9 @@
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
-@Entity({ name: 'case_types' })
-export class CaseType {
+@Entity({ name: 'observed_event_types' })
+export class ObservedEventType {
 
-    @PrimaryGeneratedColumn({ name: 'case_type_id' })
+    @PrimaryGeneratedColumn({ name: 'observed_event_type_id' })
     id: number
 
     @Column({ name: 'name' })

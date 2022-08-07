@@ -1,6 +1,6 @@
 import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm'
 
-import { Role } from './role'
+import { InsiderRole } from './insiderRole'
 
 @Entity({ name: 'insiders' })
 export class Insider {
@@ -17,7 +17,7 @@ export class Insider {
     @Column({ name: 'avatar_url' })
     avatarUrl: string
 
-    @ManyToOne(() => Role)
+    @ManyToOne(() => InsiderRole)
     @JoinColumn({ name: 'role_id' })
-    role: Role
+    role: InsiderRole
 }

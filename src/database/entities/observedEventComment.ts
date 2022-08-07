@@ -8,18 +8,18 @@ import {
     UpdateDateColumn
 } from 'typeorm'
 
-import { AnomalyCase } from './anomalyCase'
+import { ObservedEvent } from './observedEvent'
 import { Insider } from './insider'
 
-@Entity({ name: 'anomaly_case_comments' })
-export class AnomalyCaseComment {
+@Entity({ name: 'observed_event_comments' })
+export class ObservedEventComment {
 
-    @PrimaryGeneratedColumn({ name: 'anomaly_case_comment_id' })
+    @PrimaryGeneratedColumn({ name: 'observed_event_comment_id' })
     id: number
 
-    @ManyToOne(() => AnomalyCase)
-    @JoinColumn({ name: 'anomaly_case_id' })
-    anomalyCase: AnomalyCase
+    @ManyToOne(() => ObservedEvent)
+    @JoinColumn({ name: 'observed_event_id' })
+    observedEvent: ObservedEvent
 
     @CreateDateColumn({ name: 'created_date' })
     createdDate: Date

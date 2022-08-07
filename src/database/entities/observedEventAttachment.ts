@@ -7,18 +7,18 @@ import {
     PrimaryGeneratedColumn,
 } from 'typeorm'
 
-import { AnomalyCase } from './anomalyCase'
+import { ObservedEvent } from './observedEvent'
 import { Insider } from './insider'
 
-@Entity({ name: 'anomaly_case_attachments' })
-export class AnomalyCaseAttachment {
+@Entity({ name: 'observed_event_attachments' })
+export class ObservedEventAttachment {
 
-    @PrimaryGeneratedColumn({ name: 'anomaly_case_attachment_id' })
+    @PrimaryGeneratedColumn({ name: 'observed_event_attachment_id' })
     id: number
 
-    @ManyToOne(() => AnomalyCase)
-    @JoinColumn({ name: 'anomaly_case_id' })
-    anomalyCase: AnomalyCase
+    @ManyToOne(() => ObservedEvent)
+    @JoinColumn({ name: 'observed_event_id' })
+    observedEvent: ObservedEvent
 
     @CreateDateColumn({ name: 'created_date' })
     createdDate: Date
