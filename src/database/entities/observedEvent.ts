@@ -39,11 +39,11 @@ export class ObservedEvent {
     isAudioOnly: boolean
 
     @ManyToOne(() => ObservedEventCameraView)
-    @JoinColumn({ name: 'camera_view_id' })
+    @JoinColumn({ name: 'observed_event_camera_view_id' })
     observedEventCameraView: ObservedEventCameraView
 
     @ManyToOne(() => ObservedEventViewportPosition)
-    @JoinColumn({ name: 'viewport_position_id' })
+    @JoinColumn({ name: 'observed_event_viewport_position_id' })
     observedEventViewportPosition: ObservedEventViewportPosition
 
     @Column({ name: 'video_feed_timestamp' })

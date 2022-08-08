@@ -3,7 +3,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm'
 import { RoleName } from '../../utilities/enum'
 import { InsiderRole } from '../entities/insiderRole'
 
-class SeedRolesMigration1659753027275 implements MigrationInterface {
+class SeedRolesMigration1659846113951 implements MigrationInterface {
 
     async up(queryRunner: QueryRunner) {
         await queryRunner.startTransaction()
@@ -26,4 +26,4 @@ class SeedRolesMigration1659753027275 implements MigrationInterface {
     }
 }
 
-export const SeedRolesMigration = SeedRolesMigration1659753027275
+export const SeedRolesMigration = SeedRolesMigration1659846113951

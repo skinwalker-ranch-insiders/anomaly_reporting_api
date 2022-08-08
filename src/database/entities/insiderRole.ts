@@ -1,13 +1,9 @@
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
-@Entity({
-    name: 'roles'
-})
+@Entity({ name: 'insider_roles' })
 export class InsiderRole {
 
-    @PrimaryGeneratedColumn({
-        name: 'role_id'
-    })
+    @PrimaryGeneratedColumn({ name: 'insider_role_id' })
     id: number
 
     @Column({

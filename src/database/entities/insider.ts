@@ -18,6 +18,6 @@ export class Insider {
     avatarUrl: string
 
     @ManyToOne(() => InsiderRole)
-    @JoinColumn({ name: 'role_id' })
+    @JoinColumn({ name: 'insider_role_id' })
     role: InsiderRole
 }

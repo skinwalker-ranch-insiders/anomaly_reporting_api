@@ -8,7 +8,7 @@ import {
 import { ObservedEventType } from '../entities/observedEventType'
 import { ObservedEventTypeCategory } from '../entities/observedEventTypeCategory'
 
-class SeedEventTypesMigration1659846113947 implements MigrationInterface {
+class SeedEventTypesMigration1659846113950 implements MigrationInterface {
 
     async up(queryRunner: QueryRunner) {
         await queryRunner.startTransaction()
@@ -119,7 +119,7 @@ class SeedEventTypesMigration1659846113947 implements MigrationInterface {
                 }),
                 queryRunner.manager.create(ObservedEventTypeCategory, {
                     name: ContagionTypeCategoryName.Nightmare,
-                    description: 'A nightmare or night terror which coincides with a relevant observed event',
+                    description: 'A nightmare or night terror which may coincide with a relevant observed event',
                     observedEventType: contagionType!
                 }),
                 queryRunner.manager.create(ObservedEventTypeCategory, {
@@ -141,4 +141,4 @@ class SeedEventTypesMigration1659846113947 implements MigrationInterface {
     }
 }
 
-export const SeedEventTypesMigration = SeedEventTypesMigration1659846113947
+export const SeedEventTypesMigration = SeedEventTypesMigration1659846113950
