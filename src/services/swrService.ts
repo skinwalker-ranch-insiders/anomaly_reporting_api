@@ -1,7 +1,8 @@
 import { UserCredentials } from '../payloads/userCredentials'
 import { AuthedUser } from '../payloads/authedUser'
-import { parseCookies, formData, request } from '../utilities/request'
 import { HttpMethod } from '../utilities/enum'
+import { HttpError } from '../utilities/error'
+import { parseCookies, formData, request } from '../utilities/request'
 import { insidersService } from './insidersService'
 
 export const swrService = {
@@ -27,7 +28,7 @@ export const swrService = {
         })
 
         if (response.status >= 400) {
-            throw new Error('Invalid credentials')
+            throw new HttpError(401, 'Invalid credentials')
         }
 
         const cookieMap = parseCookies(response.headers)

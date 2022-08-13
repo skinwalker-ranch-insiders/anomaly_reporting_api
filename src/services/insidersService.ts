@@ -4,7 +4,6 @@ import { database } from '../database'
 import { Insider } from '../database/entities/insider'
 import { RoleName } from '../utilities/enum'
 import { notIn } from '../utilities/misc'
-import { dataOptionsService } from './dataOptionsService'
 import { InsiderRole } from '../database/entities/insiderRole'
 import { HttpError } from '../utilities/error'
 
@@ -70,7 +69,7 @@ export const insidersService = {
             insider.avatarUrl = ''
         }
         if (notIn(insider, 'role')) {
-            insider.role = await dataOptionsService.getRoleByName(RoleName.Member) ?? undefined
+            insider.role = await this.getRoleByName(RoleName.Member)
         }
         return this.insidersRepository.save(this.insidersRepository.create(insider))
     },
@@ -94,5 +93,22 @@ export const insidersService = {
      */
     async listRoles(): Promise<InsiderRole[]> {
         return this.roleRepository.find()
+    },
+    /**
+     * Retrieve a single insider role by its name
+     * @param name
+     */
+    async getRoleByName(name: string): Promise<InsiderRole> {
+        const existingRole = await this.roleRepository.findOne({
+            where: {
+                name: RoleName.Member
+            }
+        })
+
+        if (!existingRole) {
+            throw new HttpError(404, `No role exists with name: ${name}`)
+        }
+
+        return existingRole
     }
 }

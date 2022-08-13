@@ -1,5 +1,6 @@
 import { insidersService } from '../services/insidersService'
 import { HttpError } from '../utilities/error'
+import { logger } from '../utilities/misc'
 import { createRouter, get, patch } from '../utilities/router'
 import { requireValidToken } from './middleware/requireValidToken'
 import { requireEditPermission } from './middleware/requireEditPermission'
@@ -10,7 +11,7 @@ import { requireEditPermission } from './middleware/requireEditPermission'
  */
 export const insiderRouter = createRouter('/insiders', [requireValidToken], [
     /**
-     * Retrieve a single insider by their id
+     * Retrieve a single insider by their ID
      */
     get('/:insider_id', [], async (request, response) => {
         try {
@@ -27,6 +28,7 @@ export const insiderRouter = createRouter('/insiders', [requireValidToken], [
                 response.status(error.status)
                 response.send(error.message)
             } else {
+                logger.err(error)
                 response.sendStatus(500)
             }
         }
@@ -50,21 +52,7 @@ export const insiderRouter = createRouter('/insiders', [requireValidToken], [
                 response.status(error.status)
                 response.send(error.message)
             } else {
-                response.sendStatus(500)
-            }
-        }
-    }),
-    /**
-     * Retrieve an array of all insider roles
-     */
-    get('/roles', [], async (request, response) => {
-        try {
-            response.json(await insidersService.listRoles())
-        } catch (error) {
-            if (error instanceof HttpError) {
-                response.status(error.status)
-                response.send(error.message)
-            } else {
+                logger.err(error)
                 response.sendStatus(500)
             }
         }

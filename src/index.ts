@@ -10,6 +10,7 @@ import { database } from './database'
 import { authRouter } from './routes/authRouter'
 import { observedEventRouter } from './routes/observedEventRouter'
 import { insiderRouter } from './routes/insiderRouter'
+import { systemRouter } from './routes/systemRouter'
 import { env, isProdEnv, logger } from './utilities/misc'
 
 function main(args: string[]) {
@@ -34,6 +35,7 @@ function main(args: string[]) {
         app.use('/api/v1' + authRouter.base, authRouter)
         app.use('/api/v1' + observedEventRouter.base, observedEventRouter)
         app.use('/api/v1' + insiderRouter.base, insiderRouter)
+        app.use('/api/v1' + systemRouter.base, systemRouter)
 
         http.createServer(app).listen(port, () => {
             logger.info(`Server started on port: ${port}`)
