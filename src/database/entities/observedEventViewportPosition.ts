@@ -1,9 +1,9 @@
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
 
-@Entity()
+@Entity({ name: 'observed_event_viewport_positions' })
 export class ObservedEventViewportPosition {
 
-    @PrimaryGeneratedColumn({ name: 'viewport_position_id' })
+    @PrimaryGeneratedColumn({ name: 'observed_event_viewport_position_id' })
     id: number
 
     @Column({ name: 'name' })

@@ -50,7 +50,7 @@ export class ObservedEvent {
     videoFeedTimestamp: Date
 
     @ManyToOne(() => ObservedEventStatus)
-    @JoinColumn({ name: 'case_status_id' })
+    @JoinColumn({ name: 'observed_event_status_id' })
     observedEventStatus: ObservedEventStatus
 
     @Column({ name: 'title' })

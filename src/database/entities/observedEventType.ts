@@ -11,4 +11,7 @@ export class ObservedEventType {
 
     @Column({ name: 'description' })
     description: string
+
+    @Column({ name: 'icon_code_point' })
+    iconCodePoint: number
 }

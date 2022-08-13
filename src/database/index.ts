@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm'
+import { DataSource, LoggerOptions } from 'typeorm'
 
 import { env } from '../utilities/misc'
 import { Insider } from './entities/insider'
@@ -6,30 +6,42 @@ import { InsiderRole } from './entities/insiderRole'
 import { ObservedEvent } from './entities/observedEvent'
 import { ObservedEventAttachment } from './entities/observedEventAttachment'
 import { ObservedEventCameraView } from './entities/observedEventCameraView'
+import { ObservedEventChangeLog } from './entities/observedEventChangeLog'
 import { ObservedEventComment } from './entities/observedEventComment'
 import { ObservedEventLike } from './entities/observedEventLike'
 import { ObservedEventStatus } from './entities/observedEventStatus'
 import { ObservedEventType } from './entities/observedEventType'
 import { ObservedEventTypeCategory } from './entities/observedEventTypeCategory'
 import { ObservedEventViewportPosition } from './entities/observedEventViewportPosition'
-import { SeedRolesMigration } from './migrations/seedRolesMigration'
-import { SeedEventTypesMigration } from './migrations/seedEventTypesMigration'
+import { SeedInitDbSchemaMigration } from './migrations/seedInitDbSchemaMigration'
+import { SeedInitEventTypesMigration } from './migrations/seedInitEventTypesMigration'
+import { SeedInitRolesMigration } from './migrations/seedInitRolesMigration'
+
+const DATABASE_TYPE = 'postgres'
+const DATABASE_HOST = env('DATABASE_HOST', 'localhost')
+const DATABASE_PORT = Number.parseInt(env('DATABASE_PORT', '5432'))
+const DATABASE_USERNAME = env('DATABASE_USERNAME', 'postgres')
+const DATABASE_PASSWORD = env('DATABASE_PASSWORD', 'postgres')
+const DATABASE_NAME = env('DATABASE_NAME', 'swr_insider_reports')
+const DATABASE_SCHEMA = env('DATABASE_SCHEMA', 'swr_insider_reports')
+const DATABASE_LOGGING = JSON.parse(env('DATABASE_LOGGING', '["error"]'))
 
 export const database = new DataSource({
-    type: 'postgres',
-    host: env('POSTGRES_HOST', 'localhost'),
-    port: Number.parseInt(env('POSTGRES_PORT', '5432')),
-    username: env('POSTGRES_USERNAME', 'postgres'),
-    password: env('POSTGRES_PASSWORD', 'postgres'),
-    database: env('POSTGRES_DATABASE', 'postgres'),
-    schema: env('POSTGRES_SCHEMA', 'swr_event_reports'),
-    synchronize: true,
+    type: DATABASE_TYPE,
+    host: DATABASE_HOST,
+    port: DATABASE_PORT,
+    username: DATABASE_USERNAME,
+    password: DATABASE_PASSWORD,
+    database: DATABASE_NAME,
+    schema: DATABASE_SCHEMA,
+    logging: DATABASE_LOGGING,
     entities: [
         Insider,
         InsiderRole,
         ObservedEvent,
         ObservedEventAttachment,
         ObservedEventCameraView,
+        ObservedEventChangeLog,
         ObservedEventComment,
         ObservedEventLike,
         ObservedEventStatus,
@@ -39,7 +51,8 @@ export const database = new DataSource({
     ],
     migrationsRun: true,
     migrations: [
-        SeedRolesMigration,
-        SeedEventTypesMigration,
+        SeedInitDbSchemaMigration,
+        SeedInitEventTypesMigration,
+        SeedInitRolesMigration,
     ]
 })
