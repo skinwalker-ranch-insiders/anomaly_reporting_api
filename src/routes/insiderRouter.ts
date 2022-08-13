@@ -16,7 +16,7 @@ export const insiderRouter = createRouter('/insiders', [requireValidToken], [
         const insiderId = Number.parseInt(request.params['insider_id'])
 
         if (Number.isNaN(insiderId)) {
-            response.sendStatus(404)
+            response.sendStatus(400)
         } else try {
             response.json(await insidersService.getInsiderById(insiderId))
         } catch {
@@ -28,7 +28,15 @@ export const insiderRouter = createRouter('/insiders', [requireValidToken], [
      * (Requires edit permissions: must be admin or the insider who owns this account)
      */
     patch('/:insider_id', [requireEditPermission], async (request, response) => {
-        // TODO
+        const insiderId = Number.parseInt(request.params['insider_id'])
+
+        if (Number.isNaN(insiderId)) {
+            response.sendStatus(400)
+        } else try {
+            response.json(await  insidersService.updateInsider(request.body))
+        } catch {
+            response.sendStatus(404)
+        }
     }),
     /**
      * Delete an insider by their id
@@ -36,5 +44,15 @@ export const insiderRouter = createRouter('/insiders', [requireValidToken], [
      */
     del('/:insider_id', [requireDeletePermission], async (request, response) => {
         // TODO
+    }),
+    /**
+     * Retrieve an array of all insider roles
+     */
+    get('/roles', [], async (request, response) => {
+        try {
+            response.json(await insidersService.listRoles())
+        } catch {
+            response.sendStatus(500)
+        }
     })
 ])

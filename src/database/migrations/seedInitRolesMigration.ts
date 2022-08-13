@@ -3,6 +3,9 @@ import { MigrationInterface, QueryRunner } from 'typeorm'
 import { RoleName } from '../../utilities/enum'
 import { InsiderRole } from '../entities/insiderRole'
 
+/**
+ * Seed the database with recognized user roles
+ */
 class SeedInitRolesMigration1660358925997 implements MigrationInterface {
 
     async up(queryRunner: QueryRunner) {

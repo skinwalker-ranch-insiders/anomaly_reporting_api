@@ -5,13 +5,14 @@ import { Insider } from '../database/entities/insider'
 import { RoleName } from '../utilities/enum'
 import { notIn } from '../utilities/misc'
 import { dataOptionsService } from './dataOptionsService'
+import { InsiderRole } from '../database/entities/insiderRole'
 
 /**
  * Includes service calls to create and retrieve insiders from the database
  */
 export const insidersService = {
     insidersRepository: database.getRepository(Insider),
-
+    roleRepository: database.getRepository(InsiderRole),
     /**
      * Retrieve a single insider by their user ID
      * @param id
@@ -26,7 +27,6 @@ export const insidersService = {
             }
         })
     },
-
     /**
      * Retrieve a single insider by their email address
      * @param email
@@ -41,9 +41,9 @@ export const insidersService = {
             }
         })
     },
-
     /**
      * Create and resolve with a single insider object
+     * (May throw an error if `email` field is missing)
      * @param insider
      */
     async createInsider(insider: DeepPartial<Insider>): Promise<Insider> {
@@ -60,5 +60,29 @@ export const insidersService = {
             insider.role = await dataOptionsService.getRoleByName(RoleName.Member) ?? undefined
         }
         return this.insidersRepository.save(this.insidersRepository.create(insider))
+    },
+    /**
+     * Update an existing insider with a partial data object
+     * (May throw an error if no existing insider exists)
+     * @param insider
+     */
+    async updateInsider(insider: DeepPartial<Insider>): Promise<Insider> {
+        if (!insider.id) {
+            throw new Error('Missing required field: `id`')
+        }
+
+        const existingInsider = await this.getInsiderById(insider.id)
+
+        if (!existingInsider) {
+            throw new Error(`No insider exists with id: ${insider.id}`)
+        }
+
+        return this.insidersRepository.save(this.insidersRepository.merge(existingInsider, insider))
+    },
+    /**
+     * Retrieve a list of all user roles
+     */
+    async listRoles(): Promise<InsiderRole[]> {
+        return this.roleRepository.find()
     }
 }

@@ -14,6 +14,9 @@ import { ObservedEventTypeCategory } from '../entities/observedEventTypeCategory
 import { ObservedEventStatus } from '../entities/observedEventStatus'
 import { ObservedEventViewportPosition } from '../entities/observedEventViewportPosition'
 
+/**
+ * Seed the database with initial tables from entity classes
+ */
 class SeedInitDbSchemaMigration1660279324604 implements MigrationInterface {
 
     async up(queryRunner: QueryRunner) {

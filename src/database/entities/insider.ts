@@ -1,4 +1,4 @@
-import {Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn} from 'typeorm'
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 
 import { InsiderRole } from './insiderRole'
 
@@ -8,6 +8,7 @@ export class Insider {
     @PrimaryGeneratedColumn({ name: 'insider_id' })
     id: number
 
+    @Index('insider_email_index')
     @Column({ name: 'email' })
     email: string
 
