@@ -3,6 +3,7 @@ import { createRouter, del, get, patch } from '../utilities/router'
 import { requireValidToken } from './middleware/requireValidToken'
 import { requireDeletePermission } from './middleware/requireDeletePermission'
 import { requireEditPermission } from './middleware/requireEditPermission'
+import { HttpError } from '../utilities/error'
 
 /**
  * Contains routes to retrieve and manage insiders
@@ -19,8 +20,13 @@ export const insiderRouter = createRouter('/insiders', [requireValidToken], [
             response.sendStatus(400)
         } else try {
             response.json(await insidersService.getInsiderById(insiderId))
-        } catch {
-            response.sendStatus(404)
+        } catch (error) {
+            if (error instanceof HttpError) {
+                response.status(error.status)
+                response.send(error.message)
+            } else {
+                response.sendStatus(500)
+            }
         }
     }),
     /**
@@ -34,8 +40,13 @@ export const insiderRouter = createRouter('/insiders', [requireValidToken], [
             response.sendStatus(400)
         } else try {
             response.json(await  insidersService.updateInsider(request.body))
-        } catch {
-            response.sendStatus(404)
+        } catch (error) {
+            if (error instanceof HttpError) {
+                response.status(error.status)
+                response.send(error.message)
+            } else {
+                response.sendStatus(500)
+            }
         }
     }),
     /**
@@ -51,8 +62,13 @@ export const insiderRouter = createRouter('/insiders', [requireValidToken], [
     get('/roles', [], async (request, response) => {
         try {
             response.json(await insidersService.listRoles())
-        } catch {
-            response.sendStatus(500)
+        } catch (error) {
+            if (error instanceof HttpError) {
+                response.status(error.status)
+                response.send(error.message)
+            } else {
+                response.sendStatus(500)
+            }
         }
     })
 ])

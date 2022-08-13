@@ -6,6 +6,7 @@ import { RoleName } from '../utilities/enum'
 import { notIn } from '../utilities/misc'
 import { dataOptionsService } from './dataOptionsService'
 import { InsiderRole } from '../database/entities/insiderRole'
+import { HttpError } from '../utilities/error'
 
 /**
  * Includes service calls to create and retrieve insiders from the database
@@ -18,7 +19,7 @@ export const insidersService = {
      * @param id
      */
     async getInsiderById(id: number): Promise<Insider | null> {
-        return this.insidersRepository.findOne({
+        const existingInsider = await this.insidersRepository.findOne({
             where: {
                 id
             },
@@ -26,13 +27,19 @@ export const insidersService = {
                 role: true
             }
         })
+
+        if (!existingInsider) {
+            throw new HttpError(404, `No insider exists with id: ${id}`)
+        }
+
+        return existingInsider
     },
     /**
      * Retrieve a single insider by their email address
      * @param email
      */
     async getInsiderByEmail(email: string): Promise<Insider | null> {
-        return this.insidersRepository.findOne({
+        const existingInsider = this.insidersRepository.findOne({
             where: {
                 email
             },
@@ -40,6 +47,12 @@ export const insidersService = {
                 role: true
             }
         })
+
+        if (!existingInsider) {
+            throw new HttpError(404, `No insider exists with email: ${email}`)
+        }
+
+        return existingInsider
     },
     /**
      * Create and resolve with a single insider object
@@ -48,7 +61,7 @@ export const insidersService = {
      */
     async createInsider(insider: DeepPartial<Insider>): Promise<Insider> {
         if (notIn(insider, 'email')) {
-            throw new Error('Missing required field: `email`')
+            throw new HttpError(400, 'Missing required field: `email`')
         }
         if (notIn(insider, 'name')) {
             insider.name = ''
@@ -68,13 +81,13 @@ export const insidersService = {
      */
     async updateInsider(insider: DeepPartial<Insider>): Promise<Insider> {
         if (!insider.id) {
-            throw new Error('Missing required field: `id`')
+            throw new HttpError(400, 'Missing required field: `id`')
         }
 
         const existingInsider = await this.getInsiderById(insider.id)
 
         if (!existingInsider) {
-            throw new Error(`No insider exists with id: ${insider.id}`)
+            throw new HttpError(404, `No insider exists with id: ${insider.id}`)
         }
 
         return this.insidersRepository.save(this.insidersRepository.merge(existingInsider, insider))
