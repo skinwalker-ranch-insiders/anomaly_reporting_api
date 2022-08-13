@@ -77,17 +77,14 @@ export const insidersService = {
     /**
      * Update an existing insider with a partial data object
      * (May throw an error if no existing insider exists)
+     * @param id
      * @param insider
      */
-    async updateInsider(insider: DeepPartial<Insider>): Promise<Insider> {
-        if (!insider.id) {
-            throw new HttpError(400, 'Missing required field: `id`')
-        }
-
-        const existingInsider = await this.getInsiderById(insider.id)
+    async updateInsider(id: number, insider: DeepPartial<Insider>): Promise<Insider> {
+        const existingInsider = await this.getInsiderById(id)
 
         if (!existingInsider) {
-            throw new HttpError(404, `No insider exists with id: ${insider.id}`)
+            throw new HttpError(404, `No insider exists with id: ${id}`)
         }
 
         return this.insidersRepository.save(this.insidersRepository.merge(existingInsider, insider))
