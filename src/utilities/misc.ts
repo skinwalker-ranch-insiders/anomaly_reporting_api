@@ -8,7 +8,7 @@ export function isProdEnv() {
     return env('NODE_ENV') === 'production'
 }
 
-export function notIn(object: object, key: string) {
+export function notIn<Object extends object>(object: Object, key: keyof Object) {
     return !(key in object)
 }
 

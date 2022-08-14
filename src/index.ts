@@ -13,6 +13,12 @@ import { insiderRouter } from './routes/insiderRouter'
 import { systemRouter } from './routes/systemRouter'
 import { env, isProdEnv, logger } from './utilities/misc'
 
+const SERVER_PORT = env('SERVER_PORT', '3000')
+
+/**
+ * Initializes the database and starts the web server
+ * @param args
+ */
 function main(args: string[]) {
     logger.info(`Application starting with args: ${args.join(', ')}`)
 
@@ -20,7 +26,6 @@ function main(args: string[]) {
         logger.info('Database initialized')
 
         const app = express()
-        const port = env('SERVER_PORT', '3000')
 
         app.use(express.json())
         app.use(express.urlencoded({ extended: true }))
@@ -37,8 +42,8 @@ function main(args: string[]) {
         app.use('/api/v1' + insiderRouter.base, insiderRouter)
         app.use('/api/v1' + systemRouter.base, systemRouter)
 
-        http.createServer(app).listen(port, () => {
-            logger.info(`Server started on port: ${port}`)
+        http.createServer(app).listen(SERVER_PORT, () => {
+            logger.info(`Server started on port: ${SERVER_PORT}`)
         })
     })
 }

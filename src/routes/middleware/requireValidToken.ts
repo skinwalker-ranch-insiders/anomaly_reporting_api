@@ -10,7 +10,7 @@ import { verifyToken } from '../../utilities/jwt'
  */
 export async function requireValidToken(request: Request, response: Response, next: NextFunction): Promise<void> {
     const authorization = request.header('authorization')
-    const token = authorization?.replace(/Bearer\s/, '')
+    const token = authorization?.replace(/Bearer\s/, '') // TODO store token in secure cookie
 
     if (await verifyToken(token)) {
         next()

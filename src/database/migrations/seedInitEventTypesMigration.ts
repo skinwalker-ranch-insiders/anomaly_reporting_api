@@ -1,6 +1,11 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
-import { bulkInsertEntity, insertEntity } from '../../utilities/migration'
+import {
+    bulkInsertEntity,
+    clearEntityData,
+    insertEntity,
+    runTransaction
+} from '../../utilities/migration'
 import { ObservedEventType } from '../entities/observedEventType'
 import { ObservedEventTypeCategory } from '../entities/observedEventTypeCategory'
 
@@ -10,8 +15,7 @@ import { ObservedEventTypeCategory } from '../entities/observedEventTypeCategory
 class SeedInitEventTypesMigration1660358902648 implements MigrationInterface {
 
     async up(queryRunner: QueryRunner) {
-        await queryRunner.startTransaction()
-        try {
+        await runTransaction(queryRunner, async () => {
             const anomalyType = await insertEntity(queryRunner, ObservedEventType, {
                 name: 'Anomaly',
                 description: 'An observed event which lacks conventional explanation',
@@ -122,15 +126,12 @@ class SeedInitEventTypesMigration1660358902648 implements MigrationInterface {
                 description: 'An observed event which does not fit any category',
                 iconCodePoint: 0xf547
             })
-            await queryRunner.commitTransaction()
-        } catch {
-            await queryRunner.rollbackTransaction()
-        }
+        })
     }
 
     async down(queryRunner: QueryRunner) {
-        await queryRunner.manager.clear(ObservedEventTypeCategory)
-        await queryRunner.manager.clear(ObservedEventType)
+        await clearEntityData(queryRunner, ObservedEventTypeCategory)
+        await clearEntityData(queryRunner, ObservedEventType)
     }
 }
 

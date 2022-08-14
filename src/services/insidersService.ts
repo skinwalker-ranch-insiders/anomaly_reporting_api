@@ -84,6 +84,8 @@ export const insidersService = {
 
         if (!existingInsider) {
             throw new HttpError(404, `No insider exists with id: ${id}`)
+        } else {
+            delete insider.id
         }
 
         return this.insidersRepository.save(this.insidersRepository.merge(existingInsider, insider))

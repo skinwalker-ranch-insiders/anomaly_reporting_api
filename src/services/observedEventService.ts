@@ -8,6 +8,14 @@ import { ObservedEventLike } from '../database/entities/observedEventLike'
 import { Insider } from '../database/entities/insider'
 import { insidersService } from './insidersService'
 import { HttpError } from '../utilities/error'
+import { ObservedEventChangeLog } from '../database/entities/observedEventChangeLog'
+import { ObservedEventType } from '../database/entities/observedEventType'
+import { ObservedEventTypeCategory } from '../database/entities/observedEventTypeCategory'
+import { ObservedEventStatus } from '../database/entities/observedEventStatus'
+import { ObservedEventCameraView } from '../database/entities/observedEventCameraView'
+import { ObservedEventViewportPosition } from '../database/entities/observedEventViewportPosition'
+import { notIn } from '../utilities/misc'
+import { StatusName } from '../utilities/enum'
 
 /**
  * Includes service calls to create and retrieve observed events from the database
@@ -15,8 +23,14 @@ import { HttpError } from '../utilities/error'
 export const observedEventService = {
     eventRepository: database.getRepository(ObservedEvent),
     attachmentRepository: database.getRepository(ObservedEventAttachment),
+    cameraViewRepository: database.getRepository(ObservedEventCameraView),
     commentRepository: database.getRepository(ObservedEventComment),
+    changeLogRepository: database.getRepository(ObservedEventChangeLog),
     likeRepository: database.getRepository(ObservedEventLike),
+    typeRepository: database.getRepository(ObservedEventType),
+    typeCategoryRepository: database.getRepository(ObservedEventTypeCategory),
+    statusRepository: database.getRepository(ObservedEventStatus),
+    viewportPositionRepository: database.getRepository(ObservedEventViewportPosition),
     /**
      * List all events with options to sort and filter (WIP)
      */
@@ -49,11 +63,14 @@ export const observedEventService = {
      * @param event
      */
     async createEvent(event: DeepPartial<ObservedEvent>): Promise<ObservedEvent> {
+        if (notIn(event, 'observedEventStatus')) {
+            event.observedEventStatus = await this.getStatusByName(StatusName.Open)
+        }
         return this.eventRepository.save(this.eventRepository.create(event))
     },
     /**
      * Update an existing event
-     * (may throw an exception if no existing event is found)
+     * (may throw an error if no existing event is found)
      * @param event
      */
     async updateEvent(event: DeepPartial<ObservedEvent>): Promise<ObservedEvent> {
@@ -71,7 +88,7 @@ export const observedEventService = {
     },
     /**
      * Retrieves a list of attached evidence to a specific event
-     * (may throw an exception if no existing event is found)
+     * (may throw an error if no existing event is found)
      * @param event
      */
     async listEventAttachments(event: DeepPartial<ObservedEvent>): Promise<ObservedEventAttachment[]> {
@@ -93,7 +110,7 @@ export const observedEventService = {
     },
     /**
      * Attach evidence to an existing event
-     * (may throw an exception if no existing event is found)
+     * (may throw an error if no existing event is found)
      * @param event
      * @param attachment
      */
@@ -117,8 +134,55 @@ export const observedEventService = {
         return this.attachmentRepository.save(newAttachment)
     },
     /**
+     * Retrieve a list of change log entries of a specific event
+     * (May throw an error if no existing even is found)
+     * @param event
+     */
+    async listEventChangeLogs(event: DeepPartial<ObservedEvent>): Promise<ObservedEventChangeLog[]> {
+        if (!event.id) {
+            throw new HttpError(400, 'Event must include an `id`')
+        }
+
+        const existingEvent = await this.eventRepository.findOneBy({ id: event.id })
+
+        if (!existingEvent) {
+            throw new HttpError(404, `No event exists with id: ${event.id}`)
+        }
+
+        return this.changeLogRepository.find({
+            where: {
+                observedEvent: existingEvent
+            }
+        })
+    },
+    /**
+     * Add a change log entry to an existing event
+     * (May throw an error if no existing event is found)
+     * @param event
+     * @param changeLog
+     */
+    async createEventChangeLog(
+        event: DeepPartial<ObservedEvent>,
+        changeLog: DeepPartial<ObservedEventChangeLog>
+    ): Promise<ObservedEventChangeLog> {
+        if (!event.id) {
+            throw new HttpError(400, 'Event must include an `id`')
+        }
+
+        const existingEvent = await this.eventRepository.findOneBy({ id: event.id })
+
+        if (!existingEvent) {
+            throw new HttpError(404, `No event exists with id: ${event.id}`)
+        }
+
+        const newChangeLog = this.changeLogRepository.create(changeLog)
+        newChangeLog.observedEvent = existingEvent
+
+        return this.changeLogRepository.save(newChangeLog)
+    },
+    /**
      * Retrieves a list of comments on a specific event
-     * (may throw an exception if no existing event is found)
+     * (may throw an error if no existing event is found)
      * @param event
      */
     async listEventComments(event: DeepPartial<ObservedEvent>): Promise<ObservedEventComment[]> {
@@ -140,7 +204,7 @@ export const observedEventService = {
     },
     /**
      * Add a comment to an existing event
-     * (may throw an exception if no existing event is found)
+     * (may throw an error if no existing event is found)
      * @param event
      * @param comment
      */
@@ -165,7 +229,7 @@ export const observedEventService = {
     },
     /**
      * Retrieves a list of likes on a specific event
-     * (may throw an exception if no existing event is found)
+     * (may throw an error if no existing event is found)
      * @param event
      */
     async listEventLikes(event: DeepPartial<ObservedEvent>): Promise<ObservedEventLike[]> {
@@ -187,7 +251,7 @@ export const observedEventService = {
     },
     /**
      * Add a comment to an existing event
-     * (may throw an exception if no existing event is found)
+     * (may throw an error if no existing event is found)
      * @param event
      * @param insider
      */
@@ -220,4 +284,51 @@ export const observedEventService = {
 
         return this.commentRepository.save(newLike)
     },
+    /**
+     * Retrieve a list of all event types
+     */
+    async listTypes(): Promise<ObservedEventType[]> {
+        return this.typeRepository.find()
+    },
+    /**
+     * Retrieve a list of all event type sub-categories
+     */
+    async listTypeCategories(): Promise<ObservedEventTypeCategory[]>  {
+        return this.typeCategoryRepository.find()
+    },
+    /**
+     * Retrieve a list of all event statuses
+     */
+    async listStatuses(): Promise<ObservedEventStatus[]> {
+        return this.statusRepository.find()
+    },
+    /**
+     * Retrieve a single status by its name
+     * @param name
+     */
+    async getStatusByName(name: string): Promise<ObservedEventStatus> {
+        const existingStatus = await this.statusRepository.findOne({
+            where: {
+                name
+            }
+        })
+
+        if (!existingStatus) {
+            throw new HttpError(404, `No status exists with name: ${name}`)
+        }
+
+        return existingStatus
+    },
+    /**
+     * Retrieve a list of all available camera views
+     */
+    async listCameraViews(): Promise<ObservedEventCameraView[]> {
+        return this.cameraViewRepository.find()
+    },
+    /**
+     * Retrieve a list of all possible viewport positions
+     */
+    async listViewportPositions(): Promise<ObservedEventViewportPosition[]> {
+        return this.viewportPositionRepository.find()
+    }
 }

@@ -5,8 +5,16 @@ import { HttpError } from '../utilities/error'
 import { parseCookies, formData, request } from '../utilities/request'
 import { insidersService } from './insidersService'
 
+/**
+ * Includes service calls to the main skinwalker-ranch.com website
+ */
 export const swrService = {
-
+    /**
+     * Authenticates user against the SWR website, retrieves an existing insider
+     * or creates a new one if it's the first time they are singing in
+     * (May throw an error if credentials are invalid or if the website changes its auth method)
+     * @param credentials
+     */
     async login(credentials: UserCredentials): Promise<AuthedUser> {
         const body = formData({
             log: credentials.email,

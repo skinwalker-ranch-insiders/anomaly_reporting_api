@@ -56,3 +56,37 @@ export async function bulkInsertEntity<EntityType>(
 ): Promise<EntityType[]> {
     return queryRunner.manager.save(bulkEntityData.map(entityData => queryRunner.manager.create(entityTarget, entityData)))
 }
+
+/**
+ * Clears the data from an entity's table
+ * @param queryRunner
+ * @param entityTarget
+ */
+export async function clearEntityData<EntityType>(
+    queryRunner: QueryRunner,
+    entityTarget: EntityTarget<EntityType>
+): Promise<void> {
+    return queryRunner.manager.clear(entityTarget)
+}
+
+/**
+ * Runs an async transaction against the database
+ * @param queryRunner
+ * @param transactionRunner
+ */
+export async function runTransaction(
+    queryRunner: QueryRunner,
+    transactionRunner: () => Promise<void>
+): Promise<void> {
+    return new Promise(async (resolve) => {
+        await queryRunner.startTransaction()
+        try {
+            await transactionRunner()
+            await queryRunner.commitTransaction()
+        } catch {
+            await queryRunner.rollbackTransaction()
+        } finally {
+            resolve()
+        }
+    })
+}

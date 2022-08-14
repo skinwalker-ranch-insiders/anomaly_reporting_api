@@ -8,7 +8,27 @@ export enum HttpMethod {
 export enum RoleName {
     Admin = 'Admin',
     SWRTeam = 'SWR Team Member',
-    SrReviewer = 'Senior Reviewer',
+    AdvancedReviewer = 'Advanced Reviewer',
     Reviewer = 'Reviewer',
     Member = 'Member'
+}
+
+export enum StatusName {
+    Open = 'Open',
+    InitialReview = 'Initial Review',
+    AdvancedReview = 'Advanced Review',
+    Escalated = 'Escalated',
+    Closed = 'Closed'
+}
+
+export enum ViewportPosition {
+    TopLeft = 'Top Left',
+    TopCenter = 'Top Center',
+    TopRight = 'Top Right',
+    MiddleLeft = 'Middle Left',
+    MiddleCenter = 'Middle Center',
+    MiddleRight = 'Middle Right',
+    BottomLeft = 'Bottom Left',
+    BottomCenter = 'Bottom Center',
+    BottomRight = 'Bottom Right'
 }
