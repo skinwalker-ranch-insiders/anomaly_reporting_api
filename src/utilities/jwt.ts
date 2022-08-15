@@ -1,4 +1,4 @@
-import { Jwt, sign, verify } from 'jsonwebtoken'
+import { sign, verify } from 'jsonwebtoken'
 
 import { env } from './misc'
 import { AuthedUser } from '../payloads/authedUser'

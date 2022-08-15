@@ -12,8 +12,10 @@ import { observedEventRouter } from './routes/observedEventRouter'
 import { insiderRouter } from './routes/insiderRouter'
 import { systemRouter } from './routes/systemRouter'
 import { env, isProdEnv, logger } from './utilities/misc'
+import cookieParser from 'cookie-parser'
 
 const SERVER_PORT = env('SERVER_PORT', '3000')
+const COOKIE_SECRET = env('COOKIE_SECRET')
 
 /**
  * Initializes the database and starts the web server
@@ -30,6 +32,7 @@ function main(args: string[]) {
         app.use(express.json())
         app.use(express.urlencoded({ extended: true }))
         app.use(express.static(path.join(__dirname, 'public')))
+        app.use(cookieParser(COOKIE_SECRET))
 
         if (isProdEnv()) {
             app.use(helmet())

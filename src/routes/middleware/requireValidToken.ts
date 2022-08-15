@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from 'express'
 
 import { createToken, readToken } from '../../utilities/jwt'
-import { logger } from '../../utilities/misc'
+import { env, isProdEnv, logger } from '../../utilities/misc'
+
+const COOKIE_NAME = env('COOKIE_NAME', 'token')
+const COOKIE_EXP = env('COOKIE_EXP', '0')
 
 /**
  * Requires a valid JWT in the request's `authorization` header as a bearer token.
@@ -11,8 +14,7 @@ import { logger } from '../../utilities/misc'
  * @param next
  */
 export async function requireValidToken(request: Request, response: Response, next: NextFunction): Promise<void> {
-    const authorization = request.header('authorization')
-    const token = authorization?.replace(/Bearer\s/, '')
+    const token = request.signedCookies[COOKIE_NAME]
 
     if (!token) {
         response.sendStatus(401)
@@ -22,7 +24,12 @@ export async function requireValidToken(request: Request, response: Response, ne
         try {
             const refreshedToken  = await createToken(user)
 
-            response.setHeader('authorization', `Bearer ${refreshedToken}`)
+            response.cookie(COOKIE_NAME, refreshedToken, {
+                maxAge: Number.parseInt(COOKIE_EXP),
+                secure: isProdEnv(),
+                httpOnly: true,
+                signed: true
+            })
             next()
         } catch (error) {
             logger.err(error)
