@@ -16,6 +16,7 @@ import { ObservedEventCameraView } from '../database/entities/observedEventCamer
 import { ObservedEventViewportPosition } from '../database/entities/observedEventViewportPosition'
 import { notIn } from '../utilities/misc'
 import { StatusName } from '../utilities/enum'
+import { ObservedEventEscalationVote } from '../database/entities/observedEventEscalationVote'
 
 /**
  * Includes service calls to create and retrieve observed events from the database
@@ -27,6 +28,7 @@ export const observedEventService = {
     commentRepository: database.getRepository(ObservedEventComment),
     changeLogRepository: database.getRepository(ObservedEventChangeLog),
     likeRepository: database.getRepository(ObservedEventLike),
+    escalationRepository: database.getRepository(ObservedEventEscalationVote),
     typeRepository: database.getRepository(ObservedEventType),
     typeCategoryRepository: database.getRepository(ObservedEventTypeCategory),
     statusRepository: database.getRepository(ObservedEventStatus),
@@ -39,12 +41,12 @@ export const observedEventService = {
     },
     /**
      * Retrieve a single event by its ID
-     * @param id
+     * @param eventId
      */
-    async getEventById(id: number): Promise<ObservedEvent | null> {
-        return this.eventRepository.findOne({
+    async getEventById(eventId: number): Promise<ObservedEvent> {
+        const existingEvent = await this.eventRepository.findOne({
             where: {
-                id
+                id: eventId
             },
             relations: {
                 createdBy: true,
@@ -57,31 +59,51 @@ export const observedEventService = {
                 observedEventViewportPosition: true,
             }
         })
+
+        if (!existingEvent) {
+            throw new HttpError(404, `No event exists with id: ${eventId}`)
+        }
+
+        return existingEvent
     },
     /**
      * Create and resolve with a single event
      * @param event
      */
     async createEvent(event: DeepPartial<ObservedEvent>): Promise<ObservedEvent> {
+        if (notIn(event, 'createdBy')) {
+            throw new HttpError(400, 'Missing required field: `createdBy`')
+        }
+        if (notIn(event, 'observedEventCameraView')) {
+            throw new HttpError(400, 'Missing required field: `observedEventCameraView`')
+        }
+        if (notIn(event, 'observedEventViewportPosition')) {
+            throw new HttpError(400, 'Missing required field: `observedEventViewportPosition`')
+        }
+        if (notIn(event, 'observedEventType')) {
+            throw new HttpError(400, 'Missing required field: `observedEventType`')
+        }
+        if (notIn(event, 'observedEventTypeCategory')) {
+            throw new HttpError(400, 'Missing required field: `observedEventTypeCategory`')
+        }
         if (notIn(event, 'observedEventStatus')) {
             event.observedEventStatus = await this.getStatusByName(StatusName.Open)
         }
-        return this.eventRepository.save(this.eventRepository.create(event))
+
+        const savedEvent = await this.eventRepository.save(this.eventRepository.create(event))
+
+        return this.getEventById(savedEvent.id)
     },
     /**
      * Update an existing event
      * (may throw an error if no existing event is found)
      * @param event
      */
-    async updateEvent(event: DeepPartial<ObservedEvent>): Promise<ObservedEvent> {
-        if (!event.id) {
-            throw new HttpError(400, 'Event must include an `id`')
-        }
-
-        const existingEvent = await this.getEventById(event.id)
+    async updateEvent(eventId: number, event: DeepPartial<ObservedEvent>): Promise<ObservedEvent> {
+        const existingEvent = await this.getEventById(eventId)
 
         if (!existingEvent) {
-            throw new HttpError(404, `No event exists with id: ${event.id}`)
+            throw new HttpError(404, `No event exists with id: ${eventId}`)
         }
 
         return this.eventRepository.save(this.eventRepository.merge(existingEvent, event))
@@ -89,17 +111,13 @@ export const observedEventService = {
     /**
      * Retrieves a list of attached evidence to a specific event
      * (may throw an error if no existing event is found)
-     * @param event
+     * @param eventId
      */
-    async listEventAttachments(event: DeepPartial<ObservedEvent>): Promise<ObservedEventAttachment[]> {
-        if (!event.id) {
-            throw new HttpError(400, 'Event must include an `id`')
-        }
-
-        const existingEvent = await this.eventRepository.findOneBy({ id: event.id })
+    async listEventAttachments(eventId: number): Promise<ObservedEventAttachment[]> {
+        const existingEvent = await this.eventRepository.findOneBy({ id: eventId })
 
         if (!existingEvent) {
-            throw new HttpError(404, `No event exists with id: ${event.id}`)
+            throw new HttpError(404, `No event exists with id: ${eventId}`)
         }
 
         return this.attachmentRepository.find({
@@ -136,22 +154,12 @@ export const observedEventService = {
     /**
      * Retrieve a list of change log entries of a specific event
      * (May throw an error if no existing even is found)
-     * @param event
+     * @param eventId
      */
-    async listEventChangeLogs(event: DeepPartial<ObservedEvent>): Promise<ObservedEventChangeLog[]> {
-        if (!event.id) {
-            throw new HttpError(400, 'Event must include an `id`')
-        }
-
-        const existingEvent = await this.eventRepository.findOneBy({ id: event.id })
-
-        if (!existingEvent) {
-            throw new HttpError(404, `No event exists with id: ${event.id}`)
-        }
-
+    async listEventChangeLogs(eventId: number): Promise<ObservedEventChangeLog[]> {
         return this.changeLogRepository.find({
             where: {
-                observedEvent: existingEvent
+                observedEvent: await this.getEventById(eventId)
             }
         })
     },
@@ -181,24 +189,26 @@ export const observedEventService = {
         return this.changeLogRepository.save(newChangeLog)
     },
     /**
+     * Retrieves a list of escalation votes on a specific event
+     * (may throw an error if no existing event is found)
+     * @param eventId
+     */
+    async listEventEscalationVotes(eventId: number): Promise<ObservedEventEscalationVote[]> {
+        return this.escalationRepository.find({
+            where: {
+                observedEvent: await this.getEventById(eventId)
+            }
+        })
+    },
+    /**
      * Retrieves a list of comments on a specific event
      * (may throw an error if no existing event is found)
-     * @param event
+     * @param eventId
      */
-    async listEventComments(event: DeepPartial<ObservedEvent>): Promise<ObservedEventComment[]> {
-        if (!event.id) {
-            throw new HttpError(400, 'Event must include an `id`')
-        }
-
-        const existingEvent = await this.eventRepository.findOneBy({ id: event.id })
-
-        if (!existingEvent) {
-            throw new HttpError(404, `No event exists with id: ${event.id}`)
-        }
-
+    async listEventComments(eventId: number): Promise<ObservedEventComment[]> {
         return this.commentRepository.find({
             where: {
-                observedEvent: existingEvent
+                observedEvent: await this.getEventById(eventId)
             }
         })
     },
@@ -230,22 +240,12 @@ export const observedEventService = {
     /**
      * Retrieves a list of likes on a specific event
      * (may throw an error if no existing event is found)
-     * @param event
+     * @param eventId
      */
-    async listEventLikes(event: DeepPartial<ObservedEvent>): Promise<ObservedEventLike[]> {
-        if (!event.id) {
-            throw new Error('Event must include an `id`')
-        }
-
-        const existingEvent = await this.eventRepository.findOneBy({ id: event.id })
-
-        if (!existingEvent) {
-            throw new HttpError(404, `No event exists with id: ${event.id}`)
-        }
-
+    async listEventLikes(eventId: number): Promise<ObservedEventLike[]> {
         return this.likeRepository.find({
             where: {
-                observedEvent: existingEvent
+                observedEvent: await this.getEventById(eventId)
             }
         })
     },

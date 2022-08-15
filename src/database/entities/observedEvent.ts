@@ -16,7 +16,7 @@ import { ObservedEventTypeCategory } from './observedEventTypeCategory'
 import { ObservedEventViewportPosition } from './observedEventViewportPosition'
 
 @Entity({ name: 'observed_events' })
-export class ObservedEvent {
+export class  ObservedEvent {
 
     @PrimaryGeneratedColumn({ name: 'observed_event_id' })
     id: number
@@ -67,10 +67,10 @@ export class ObservedEvent {
     @JoinColumn({ name: 'observed_event_type_category_id' })
     observedEventTypeCategory: ObservedEventTypeCategory
 
-    @Column({ name: 'closed_reason' })
+    @Column({ name: 'closed_reason', nullable: true })
     closedReason: string
 
-    @Column({ name: 'closed_date' })
+    @Column({ name: 'closed_date', nullable: true })
     closedDate: Date
 
     @ManyToOne(() => Insider)

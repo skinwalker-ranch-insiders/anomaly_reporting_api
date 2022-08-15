@@ -18,6 +18,7 @@ import { SeedInitEventTypesMigration } from './migrations/seedInitEventTypesMigr
 import { SeedInitRolesMigration } from './migrations/seedInitRolesMigration'
 import { SeedInitEventStatusesMigration } from './migrations/seedInitEventStatusesMigration'
 import { SeedInitCameraDataMigration } from './migrations/seedInitCameraDataMigration'
+import { ObservedEventEscalationVote } from './entities/observedEventEscalationVote'
 
 const DATABASE_TYPE = 'postgres'
 const DATABASE_HOST = env('DATABASE_HOST', 'localhost')
@@ -45,6 +46,7 @@ export const database = new DataSource({
         ObservedEventCameraView,
         ObservedEventChangeLog,
         ObservedEventComment,
+        ObservedEventEscalationVote,
         ObservedEventLike,
         ObservedEventStatus,
         ObservedEventType,

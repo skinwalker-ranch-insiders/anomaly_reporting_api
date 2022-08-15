@@ -11,7 +11,7 @@ const JWT_SECRET = env('JWT_SECRET', '')
  */
 export async function createToken(user: AuthedUser): Promise<string> {
     return new Promise((resolve, reject) => {
-        sign(user, JWT_SECRET, { expiresIn: '2d' }, (error, token) => {
+        sign({ user }, JWT_SECRET, { expiresIn: '2d' }, (error, token) => {
             if (error) {
                 reject(error)
             } else {
@@ -27,30 +27,11 @@ export async function createToken(user: AuthedUser): Promise<string> {
  */
 export async function readToken(token: string): Promise<AuthedUser> {
     return new Promise((resolve, reject) => {
-        verify(token, JWT_SECRET, (error, user) => {
+        verify(token, JWT_SECRET, (error, payload: any) => {
             if (error) {
                 reject(error)
             } else {
-                resolve(user as AuthedUser)
-            }
-        })
-    })
-}
-
-/**
- * Verifies a given JWT against the server's secret
- * @param token
- */
-export async function verifyToken(token?: string): Promise<boolean> {
-    return new Promise((resolve) => {
-        if (!token || !JWT_SECRET) {
-            return resolve(false)
-        }
-        verify(token, JWT_SECRET, (error) => {
-            if (error) {
-                resolve(false)
-            } else {
-                resolve(true)
+                resolve(payload.user as AuthedUser)
             }
         })
     })

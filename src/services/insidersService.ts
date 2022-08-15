@@ -14,10 +14,20 @@ export const insidersService = {
     insidersRepository: database.getRepository(Insider),
     roleRepository: database.getRepository(InsiderRole),
     /**
+     * Retrieve a list of all insiders
+     */
+    async list(): Promise<Insider[]> {
+        return this.insidersRepository.find({
+            relations: {
+                role: true
+            }
+        })
+    },
+    /**
      * Retrieve a single insider by their user ID
      * @param id
      */
-    async getInsiderById(id: number): Promise<Insider | null> {
+    async getInsiderById(id: number): Promise<Insider> {
         const existingInsider = await this.insidersRepository.findOne({
             where: {
                 id
@@ -76,14 +86,14 @@ export const insidersService = {
     /**
      * Update an existing insider with a partial data object
      * (May throw an error if no existing insider exists)
-     * @param id
+     * @param insiderId
      * @param insider
      */
-    async updateInsider(id: number, insider: DeepPartial<Insider>): Promise<Insider> {
-        const existingInsider = await this.getInsiderById(id)
+    async updateInsider(insiderId: number, insider: DeepPartial<Insider>): Promise<Insider> {
+        const existingInsider = await this.getInsiderById(insiderId)
 
         if (!existingInsider) {
-            throw new HttpError(404, `No insider exists with id: ${id}`)
+            throw new HttpError(404, `No insider exists with id: ${insiderId}`)
         } else {
             delete insider.id
         }

@@ -10,6 +10,19 @@ import { requireEditPermission } from './middleware/requireEditPermission'
  * (Requires a valid auth token)
  */
 export const insiderRouter = createRouter('/insiders', [requireValidToken], [
+    get('/',  [], async (request, response) => {
+        try {
+            response.json(await insidersService.list())
+        } catch (error) {
+            if (error instanceof HttpError) {
+                response.status(error.status)
+                response.send(error.message)
+            } else {
+                logger.err(error)
+                response.sendStatus(500)
+            }
+        }
+    }),
     /**
      * Retrieve a single insider by their ID
      */
