@@ -1,8 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm'
 
 import { RoleName } from '../../utilities/enum'
-import { InsiderRole } from '../entities/insiderRole'
 import { bulkInsertEntity, clearEntityData, runTransaction } from '../../utilities/migration'
+import { InsiderRole } from '../entities/insiderRole'
 
 /**
  * Seed the database with recognized user roles

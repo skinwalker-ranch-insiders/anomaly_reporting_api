@@ -18,10 +18,11 @@ export enum StatusName {
     InitialReview = 'Initial Review',
     AdvancedReview = 'Advanced Review',
     Escalated = 'Escalated',
-    Closed = 'Closed'
+    Closed = 'Closed',
+    Archived = 'Archived'
 }
 
-export enum ViewportPosition {
+export enum ViewportPositionName {
     TopLeft = 'Top Left',
     TopCenter = 'Top Center',
     TopRight = 'Top Right',

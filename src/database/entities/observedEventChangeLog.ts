@@ -1,7 +1,7 @@
 import {
     Column,
     CreateDateColumn,
-    Entity,
+    Entity, Index,
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn
@@ -16,6 +16,7 @@ export class ObservedEventChangeLog {
     @PrimaryGeneratedColumn({ name: 'observed_event_change_log_id' })
     id: number
 
+    @Index('observed_event_change_log_observed_event_id_index')
     @ManyToOne(() => ObservedEvent)
     @JoinColumn({ name: 'observed_event_id' })
     observedEvent: ObservedEvent

@@ -16,6 +16,8 @@ import { ObservedEventViewportPosition } from './entities/observedEventViewportP
 import { SeedInitDbSchemaMigration } from './migrations/seedInitDbSchemaMigration'
 import { SeedInitEventTypesMigration } from './migrations/seedInitEventTypesMigration'
 import { SeedInitRolesMigration } from './migrations/seedInitRolesMigration'
+import { SeedInitEventStatusesMigration } from './migrations/seedInitEventStatusesMigration'
+import { SeedInitCameraDataMigration } from './migrations/seedInitCameraDataMigration'
 
 const DATABASE_TYPE = 'postgres'
 const DATABASE_HOST = env('DATABASE_HOST', 'localhost')
@@ -53,6 +55,8 @@ export const database = new DataSource({
     migrations: [
         SeedInitDbSchemaMigration,
         SeedInitEventTypesMigration,
+        SeedInitEventStatusesMigration,
+        SeedInitCameraDataMigration,
         SeedInitRolesMigration,
     ]
 })
