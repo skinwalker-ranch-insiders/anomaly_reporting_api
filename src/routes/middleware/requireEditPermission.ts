@@ -19,7 +19,8 @@ export async function requireEditPermission(request: Request, response: Response
         const eventId = Number.parseInt(request.params[IdField.ObservedEvent])
 
         if (Number.isNaN(eventId)) {
-            response.sendStatus(403)
+            response.status(400)
+            response.send(`Invalid path parameter ${IdField.ObservedEvent}: ${eventId}`)
         } else if (authedUser.role.name !== RoleName.Member) {
             next()
         } else try {
