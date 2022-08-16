@@ -1,4 +1,5 @@
 import { swrService } from '../services/swrService'
+import { HttpError } from '../utilities/error'
 import { createRouter, post } from '../utilities/router'
 import { createToken } from '../utilities/jwt'
 import { env, isProdEnv, logger } from '../utilities/misc'
@@ -29,9 +30,15 @@ export const authRouter = createRouter('/authenticate', [], [
                 response.sendStatus(500)
             }
         } catch (error) {
-            logger.err(error)
             response.clearCookie(COOKIE_NAME)
-            response.sendStatus(401)
+            
+            if (error instanceof HttpError) {
+                response.status(error.status)
+                response.send(error.message)
+            } else {
+                logger.err(error)
+                response.sendStatus(401)
+            }
         }
     })
 ])
