@@ -2,6 +2,7 @@ import { UserCredentials } from '../payloads/userCredentials'
 import { AuthedUser } from '../payloads/authedUser'
 import { HttpMethod } from '../utilities/enum'
 import { HttpError } from '../utilities/error'
+import { logger } from '../utilities/misc'
 import { parseCookies, formData, request } from '../utilities/request'
 import { insidersService } from './insidersService'
 
@@ -35,8 +36,10 @@ export const swrService = {
             }
         })
 
-        if (response.status >= 400) {
+        if (response.status === 401) {
             throw new HttpError(401, 'Invalid credentials')
+        } else if (response.status > 401) {
+            throw new Error(response.data)
         }
 
         const cookieMap = parseCookies(response.headers)
@@ -44,7 +47,7 @@ export const swrService = {
             .find(([name]) => name.startsWith('wordpress_logged_in'))?.[1]
 
         if (!wordpressLoggedInCookie) {
-            throw new Error('Unable to log in to skinwalker-ranch.com')
+            throw new Error('Unable to retrieve authentication cookie from skinwalker-ranch.com')
         }
 
         const [email] = decodeURIComponent(wordpressLoggedInCookie.value).split(/\|/)
