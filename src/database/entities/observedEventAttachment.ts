@@ -9,6 +9,7 @@ import {
 
 import { ObservedEvent } from './observedEvent'
 import { Insider } from './insider'
+import { IdField } from '../../utilities/enum'
 
 @Entity({ name: 'observed_event_attachments' })
 export class ObservedEventAttachment {
@@ -17,7 +18,7 @@ export class ObservedEventAttachment {
     id: number
 
     @ManyToOne(() => ObservedEvent)
-    @JoinColumn({ name: 'observed_event_id' })
+    @JoinColumn({ name: IdField.ObservedEvent })
     observedEvent: ObservedEvent
 
     @CreateDateColumn({ name: 'created_date' })

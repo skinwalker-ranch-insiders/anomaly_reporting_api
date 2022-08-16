@@ -1,12 +1,10 @@
 import { swrService } from '../services/swrService'
+import { UserCredentials } from '../payloads/userCredentials'
 import { HttpError } from '../utilities/error'
 import { createRouter, post } from '../utilities/router'
 import { createToken } from '../utilities/jwt'
-import { env, isProdEnv, logger } from '../utilities/misc'
-import { UserCredentials } from '../payloads/userCredentials'
-
-const COOKIE_NAME = env('COOKIE_NAME', 'token')
-const COOKIE_EXP = env('COOKIE_EXP', '0')
+import { isProdEnv, logger } from '../utilities/misc'
+import { COOKIE_EXP, COOKIE_NAME } from '../utilities/constants'
 
 export const authRouter = createRouter('/authenticate', [], [
     post<UserCredentials>('/', [], async (request, response) => {

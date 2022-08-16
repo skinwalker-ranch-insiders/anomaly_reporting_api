@@ -1,6 +1,7 @@
 import './bootstrap'
 
 import express from 'express'
+import cookieParser from 'cookie-parser'
 import path from 'path'
 import helmet from 'helmet'
 import morgan from 'morgan'
@@ -11,11 +12,8 @@ import { authRouter } from './routes/authRouter'
 import { observedEventRouter } from './routes/observedEventRouter'
 import { insiderRouter } from './routes/insiderRouter'
 import { systemRouter } from './routes/systemRouter'
-import { env, isProdEnv, logger } from './utilities/misc'
-import cookieParser from 'cookie-parser'
-
-const SERVER_PORT = env('SERVER_PORT', '3000')
-const COOKIE_SECRET = env('COOKIE_SECRET')
+import { isProdEnv, logger } from './utilities/misc'
+import { COOKIE_SECRET, SERVER_PORT } from './utilities/constants'
 
 /**
  * Initializes the database and starts the web server

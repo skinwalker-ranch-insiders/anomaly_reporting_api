@@ -5,6 +5,12 @@ export enum HttpMethod {
     Post = 'POST'
 }
 
+export enum IdField {
+    Insider = 'insider_id',
+    InsiderRole = 'insider_role_id',
+    ObservedEvent = 'observed_event_id'
+}
+
 export enum RoleName {
     Admin = 'Admin',
     SWRTeam = 'SWR Team Member',

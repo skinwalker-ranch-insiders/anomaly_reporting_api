@@ -1,11 +1,12 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 
 import { InsiderRole } from './insiderRole'
+import { IdField } from '../../utilities/enum'
 
 @Entity({ name: 'insiders' })
 export class Insider {
 
-    @PrimaryGeneratedColumn({ name: 'insider_id' })
+    @PrimaryGeneratedColumn({ name: IdField.Insider })
     id: number
 
     @Index('insider_email_index')
@@ -19,6 +20,6 @@ export class Insider {
     avatarUrl: string
 
     @ManyToOne(() => InsiderRole)
-    @JoinColumn({ name: 'insider_role_id' })
+    @JoinColumn({ name: IdField.InsiderRole })
     role: InsiderRole
 }

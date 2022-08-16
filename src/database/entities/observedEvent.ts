@@ -8,6 +8,7 @@ import {
     UpdateDateColumn
 } from 'typeorm'
 
+import { IdField } from '../../utilities/enum'
 import { Insider } from './insider'
 import { ObservedEventCameraView } from './observedEventCameraView'
 import { ObservedEventStatus } from './observedEventStatus'
@@ -18,7 +19,7 @@ import { ObservedEventViewportPosition } from './observedEventViewportPosition'
 @Entity({ name: 'observed_events' })
 export class  ObservedEvent {
 
-    @PrimaryGeneratedColumn({ name: 'observed_event_id' })
+    @PrimaryGeneratedColumn({ name: IdField.ObservedEvent })
     id: number
 
     @CreateDateColumn({ name: 'created_date' })

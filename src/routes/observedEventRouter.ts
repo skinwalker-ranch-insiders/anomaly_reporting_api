@@ -9,6 +9,7 @@ import { ObservedEvent } from '../database/entities/observedEvent'
 import { DeepPartial } from 'typeorm'
 import { ObservedEventAttachment } from '../database/entities/observedEventAttachment'
 import { ObservedEventComment } from '../database/entities/observedEventComment'
+import { IdField } from '../utilities/enum'
 
 /**
  * Contains routes for retrieving and managing events observed by insiders
@@ -52,13 +53,13 @@ export const observedEventRouter = createRouter('/observed_events', [requireVali
     /**
      * Get an event by its ID
      */
-    get('/:observed_event_id', [], async (request, response) => {
+    get(`/:${IdField.ObservedEvent}`, [], async (request, response) => {
         try {
-            const eventId = Number.parseInt(request.params['observed_event_id'])
+            const eventId = Number.parseInt(request.params[IdField.ObservedEvent])
 
             if (Number.isNaN(eventId)) {
                 response.status(400)
-                response.send(`Invalid path parameter observed_event_id: ${eventId}`)
+                response.send(`Invalid path parameter ${IdField.ObservedEvent}: ${eventId}`)
             } else {
                 response.json(await observedEventService.getEventById(eventId))
             }
@@ -75,13 +76,13 @@ export const observedEventRouter = createRouter('/observed_events', [requireVali
     /**
      * Update an event by its ID
      */
-    patch<DeepPartial<ObservedEvent>>('/:observed_event_id', [requireEditPermission], async (request, response) => {
+    patch<DeepPartial<ObservedEvent>>(`/:${IdField.ObservedEvent}`, [requireEditPermission], async (request, response) => {
         try {
-            const eventId = Number.parseInt(request.params['observed_event_id'])
+            const eventId = Number.parseInt(request.params[IdField.ObservedEvent])
 
             if (Number.isNaN(eventId)) {
                 response.status(400)
-                response.send(`Invalid path parameter observed_event_id: ${eventId}`)
+                response.send(`Invalid path parameter ${IdField.ObservedEvent}: ${eventId}`)
             } else {
                 if (notIn(request.body, 'updatedBy')) {
                     request.body.updatedBy = await readTokenFromRequest(request)
