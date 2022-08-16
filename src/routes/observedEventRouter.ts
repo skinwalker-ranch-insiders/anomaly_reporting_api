@@ -1,8 +1,14 @@
 import { observedEventService } from '../services/observedEventService'
-import { createRouter, get, post } from '../utilities/router'
-import { requireValidToken } from './middleware/requireValidToken'
+import { createRouter, get, patch, post } from '../utilities/router'
 import { HttpError } from '../utilities/error'
-import { logger } from '../utilities/misc'
+import { readTokenFromRequest } from '../utilities/jwt'
+import { logger, notIn } from '../utilities/misc'
+import { requireEditPermission } from './middleware/requireEditPermission'
+import { requireValidToken } from './middleware/requireValidToken'
+import { ObservedEvent } from '../database/entities/observedEvent'
+import { DeepPartial } from 'typeorm'
+import { ObservedEventAttachment } from '../database/entities/observedEventAttachment'
+import { ObservedEventComment } from '../database/entities/observedEventComment'
 
 /**
  * Contains routes for retrieving and managing events observed by insiders
@@ -24,8 +30,14 @@ export const observedEventRouter = createRouter('/observed_events', [requireVali
             }
         }
     }),
-    post('/', [], async (request, response) => {
+    /**
+     * Create a new event
+     */
+    post<DeepPartial<ObservedEvent>>('/', [], async (request, response) => {
         try {
+            if (notIn(request.body, 'createdBy')) {
+                request.body.createdBy = await readTokenFromRequest(request)
+            }
             response.json(await observedEventService.createEvent(request.body))
         } catch (error) {
             if (error instanceof HttpError) {
@@ -37,6 +49,9 @@ export const observedEventRouter = createRouter('/observed_events', [requireVali
             }
         }
     }),
+    /**
+     * Get an event by its ID
+     */
     get('/:observed_event_id', [], async (request, response) => {
         try {
             const eventId = Number.parseInt(request.params['observed_event_id'])
@@ -57,6 +72,35 @@ export const observedEventRouter = createRouter('/observed_events', [requireVali
             }
         }
     }),
+    /**
+     * Update an event by its ID
+     */
+    patch<DeepPartial<ObservedEvent>>('/:observed_event_id', [requireEditPermission], async (request, response) => {
+        try {
+            const eventId = Number.parseInt(request.params['observed_event_id'])
+
+            if (Number.isNaN(eventId)) {
+                response.status(400)
+                response.send(`Invalid path parameter observed_event_id: ${eventId}`)
+            } else {
+                if (notIn(request.body, 'updatedBy')) {
+                    request.body.updatedBy = await readTokenFromRequest(request)
+                }
+                response.json(await observedEventService.updateEvent(eventId, request.body))
+            }
+        } catch (error) {
+            if (error instanceof HttpError) {
+                response.status(error.status)
+                response.send(error.message)
+            } else {
+                logger.err(error)
+                response.sendStatus(500)
+            }
+        }
+    }),
+    /**
+     * Get a list of attachments for an event by its ID
+     */
     get('/:observed_event_id/attachments', [], async (request, response) => {
         try {
             const eventId = Number.parseInt(request.params['observed_event_id'])
@@ -77,6 +121,35 @@ export const observedEventRouter = createRouter('/observed_events', [requireVali
             }
         }
     }),
+    /**
+     * Upload a new attachment to an event by its ID
+     */
+    post<DeepPartial<ObservedEventAttachment>>('/:observed_event_id/attachments', [requireEditPermission], async (request, response) => {
+        try {
+            const eventId = Number.parseInt(request.params['observed_event_id'])
+
+            if (Number.isNaN(eventId)) {
+                response.status(400)
+                response.send(`Invalid path parameter observed_event_id: ${eventId}`)
+            } else {
+                if (notIn(request.body, 'createdBy')) {
+                    request.body.createdBy = await readTokenFromRequest(request)
+                }
+                response.json(await observedEventService.createEventAttachment(eventId, request.body))
+            }
+        } catch (error) {
+            if (error instanceof HttpError) {
+                response.status(error.status)
+                response.send(error.message)
+            } else {
+                logger.err(error)
+                response.sendStatus(500)
+            }
+        }
+    }),
+    /**
+     * Get a list of event comments by its ID
+     */
     get('/:observed_event_id/comments', [], async (request, response) => {
         try {
             const eventId = Number.parseInt(request.params['observed_event_id'])
@@ -86,6 +159,62 @@ export const observedEventRouter = createRouter('/observed_events', [requireVali
                 response.send(`Invalid path parameter observed_event_id: ${eventId}`)
             } else {
                 response.json(await observedEventService.listEventComments(eventId))
+            }
+        } catch (error) {
+            if (error instanceof HttpError) {
+                response.status(error.status)
+                response.send(error.message)
+            } else {
+                logger.err(error)
+                response.sendStatus(500)
+            }
+        }
+    }),
+    /**
+     * Add a new comment to an event by its ID
+     */
+    post<DeepPartial<ObservedEventComment>>('/:observed_event_id/comments', [], async (request, response) => {
+        try {
+            const eventId = Number.parseInt(request.params['observed_event_id'])
+
+            if (Number.isNaN(eventId)) {
+                response.status(400)
+                response.send(`Invalid path parameter observed_event_id: ${eventId}`)
+            } else {
+                if (notIn(request.body, 'createdBy')) {
+                    request.body.createdBy = await readTokenFromRequest(request)
+                }
+                response.json(await observedEventService.createEventComment(eventId, request.body))
+            }
+        } catch (error) {
+            if (error instanceof HttpError) {
+                response.status(error.status)
+                response.send(error.message)
+            } else {
+                logger.err(error)
+                response.sendStatus(500)
+            }
+        }
+    }),
+    /**
+     * Update an existing comment on an event by its ID
+     */
+    patch<DeepPartial<ObservedEventComment>>('/:observed_event_id/comments/:observed_event_comment_id', [requireEditPermission], async (request, response) => {
+        try {
+            const eventId = Number.parseInt(request.params['observed_event_id'])
+            const commentId = Number.parseInt(request.params['observed_event_comment_id'])
+
+            if (Number.isNaN(eventId)) {
+                response.status(400)
+                response.send(`Invalid path parameter observed_event_id: ${eventId}`)
+            } else if (Number.isNaN(commentId)) {
+                response.status(400)
+                response.send(`Invalid path parameter observed_event_comment_id: ${commentId}`)
+            } else {
+                if (notIn(request.body, 'createdBy')) {
+                    request.body.updatedBy = await readTokenFromRequest(request)
+                }
+                response.json(await observedEventService.updateEventComment(eventId, commentId, request.body))
             }
         } catch (error) {
             if (error instanceof HttpError) {

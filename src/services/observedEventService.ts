@@ -129,21 +129,17 @@ export const observedEventService = {
     /**
      * Attach evidence to an existing event
      * (may throw an error if no existing event is found)
-     * @param event
+     * @param eventId
      * @param attachment
      */
     async createEventAttachment(
-        event: DeepPartial<ObservedEvent>,
+        eventId: number,
         attachment: DeepPartial<ObservedEventAttachment>
     ): Promise<ObservedEventAttachment> {
-        if (!event.id) {
-            throw new HttpError(400, 'Event must include an `id`')
-        }
-
-        const existingEvent = await this.eventRepository.findOneBy({ id: event.id })
+        const existingEvent = await this.getEventById(eventId)
 
         if (!existingEvent) {
-            throw new HttpError(404, `No event exists with id: ${event.id}`)
+            throw new HttpError(404, `No event exists with id: ${eventId}`)
         }
 
         const newAttachment = this.attachmentRepository.create(attachment)
@@ -215,27 +211,53 @@ export const observedEventService = {
     /**
      * Add a comment to an existing event
      * (may throw an error if no existing event is found)
-     * @param event
+     * @param eventId
      * @param comment
      */
     async createEventComment(
-        event: DeepPartial<ObservedEvent>,
+        eventId: number,
         comment: DeepPartial<ObservedEventComment>
     ): Promise<ObservedEventComment> {
-        if (!event.id) {
-            throw new HttpError(400, 'Event must include an `id`')
-        }
-
-        const existingEvent = await this.eventRepository.findOneBy({ id: event.id })
+        const existingEvent = await this.getEventById(eventId)
 
         if (!existingEvent) {
-            throw new HttpError(404, `No event exists with id: ${event.id}`)
+            throw new HttpError(404, `No event exists with id: ${eventId}`)
         }
 
         const newComment = this.commentRepository.create(comment)
         newComment.observedEvent = existingEvent
 
         return this.commentRepository.save(newComment)
+    },
+    /**
+     * Update an existing comment on an event
+     * (may throw an error if no existing event is found)
+     * @param eventId
+     * @param commentId
+     * @param comment
+     */
+    async updateEventComment(
+        eventId: number,
+        commentId: number,
+        comment: DeepPartial<ObservedEventComment>
+    ): Promise<ObservedEventComment> {
+        const existingEvent = await this.getEventById(eventId)
+
+        if (!existingEvent) {
+            throw new HttpError(404, `No event exists with id: ${eventId}`)
+        }
+
+        const existingComment = await this.commentRepository.findOne({
+            where: {
+                id: commentId
+            }
+        })
+
+        if (!existingComment) {
+            throw new HttpError(404, `No comment exists with id: ${commentId}`)
+        }
+
+        return this.commentRepository.save(this.commentRepository.merge(existingComment, comment))
     },
     /**
      * Retrieves a list of likes on a specific event

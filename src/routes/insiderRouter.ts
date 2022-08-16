@@ -4,6 +4,8 @@ import { logger } from '../utilities/misc'
 import { createRouter, get, patch } from '../utilities/router'
 import { requireValidToken } from './middleware/requireValidToken'
 import { requireEditPermission } from './middleware/requireEditPermission'
+import { DeepPartial } from 'typeorm'
+import { Insider } from '../database/entities/insider'
 
 /**
  * Contains routes to retrieve and manage insiders
@@ -50,7 +52,7 @@ export const insiderRouter = createRouter('/insiders', [requireValidToken], [
      * Update an insider by their ID
      * (Requires edit permissions: must be admin or the insider who owns this account)
      */
-    patch('/:insider_id', [requireEditPermission], async (request, response) => {
+    patch<DeepPartial<Insider>>('/:insider_id', [requireEditPermission], async (request, response) => {
          try {
              const insiderId = Number.parseInt(request.params['insider_id'])
 

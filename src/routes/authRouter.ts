@@ -6,7 +6,7 @@ import { env, isProdEnv, logger } from '../utilities/misc'
 const COOKIE_NAME = env('COOKIE_NAME', 'token')
 const COOKIE_EXP = env('COOKIE_EXP', '0')
 
-export const authRouter = createRouter('/auth', [], [
+export const authRouter = createRouter('/authenticate', [], [
     post('/', [], async (request, response) => {
         try {
             const authedUser = await swrService.login(request.body)
@@ -20,13 +20,16 @@ export const authRouter = createRouter('/auth', [], [
                     httpOnly: true,
                     signed: true
                 })
+
                 response.json(authedUser)
             } catch (error) {
                 logger.err(error)
+                response.clearCookie(COOKIE_NAME)
                 response.sendStatus(500)
             }
         } catch (error) {
             logger.err(error)
+            response.clearCookie(COOKIE_NAME)
             response.sendStatus(401)
         }
     })

@@ -2,7 +2,9 @@ import { sign, verify } from 'jsonwebtoken'
 
 import { env } from './misc'
 import { AuthedUser } from '../payloads/authedUser'
+import { Request } from 'express'
 
+const COOKIE_NAME = env('COOKIE_NAME', 'token')
 const JWT_SECRET = env('JWT_SECRET', '')
 
 /**
@@ -35,4 +37,12 @@ export async function readToken(token: string): Promise<AuthedUser> {
             }
         })
     })
+}
+
+/**
+ * Reads and decodes a JWT from a request (via the signed cookie)
+ * @param request
+ */
+export async function readTokenFromRequest(request: Request): Promise<AuthedUser> {
+    return readToken(request.signedCookies[COOKIE_NAME])
 }

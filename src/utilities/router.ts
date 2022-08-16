@@ -2,23 +2,27 @@ import { NextFunction, Request, RequestHandler, Response, Router } from 'express
 
 import { HttpMethod } from './enum'
 
+interface RequestParameters {
+    [key: string]: string
+}
+
 interface AsyncMiddleware extends RequestHandler {
     (request: Request, response: Response, next: NextFunction): Promise<void>
 }
 
-interface AsyncRequestHandler extends RequestHandler {
-    (request: Request, response: Response): Promise<void>
+interface AsyncRequestHandler<Body = never> {
+    (request: Request<RequestParameters, unknown, Body>, response: Response): Promise<void>
 }
 
 interface RouterWithBasePath<Base extends string> extends Router {
     base: Base
 }
 
-interface RouteDefinition {
+interface RouteDefinition<Body = never> {
     method: string
     path: string
     middleware: AsyncMiddleware[]
-    handler: AsyncRequestHandler
+    handler: AsyncRequestHandler<Body>
 }
 
 /**
@@ -28,7 +32,7 @@ interface RouteDefinition {
  * @param middleware
  * @param handler
  */
-function define(method: string, path: string, middleware: AsyncMiddleware[], handler: AsyncRequestHandler): RouteDefinition {
+function define<Body>(method: string, path: string, middleware: AsyncMiddleware[], handler: AsyncRequestHandler<Body>): RouteDefinition<Body> {
     return {
         method,
         path,
@@ -53,7 +57,7 @@ export function get(path: string, middleware: AsyncMiddleware[], handler: AsyncR
  * @param middleware
  * @param handler
  */
-export function patch(path: string, middleware: AsyncMiddleware[], handler: AsyncRequestHandler): RouteDefinition {
+export function patch<Body>(path: string, middleware: AsyncMiddleware[], handler: AsyncRequestHandler<Body>): RouteDefinition {
     return define(HttpMethod.Patch, path, middleware, handler)
 }
 
@@ -63,7 +67,7 @@ export function patch(path: string, middleware: AsyncMiddleware[], handler: Asyn
  * @param middleware
  * @param handler
  */
-export function post(path: string, middleware: AsyncMiddleware[], handler: AsyncRequestHandler): RouteDefinition {
+export function post<Body>(path: string, middleware: AsyncMiddleware[], handler: AsyncRequestHandler<Body>): RouteDefinition {
     return define(HttpMethod.Post, path, middleware, handler)
 }
 

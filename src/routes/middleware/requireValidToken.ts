@@ -7,7 +7,7 @@ const COOKIE_NAME = env('COOKIE_NAME', 'token')
 const COOKIE_EXP = env('COOKIE_EXP', '0')
 
 /**
- * Requires a valid JWT in the request's `authorization` header as a bearer token.
+ * Requires a valid JWT in a signed cookie.
  * Also refreshes the token, if valid, to extend the expiration date
  * @param request
  * @param response
@@ -30,13 +30,16 @@ export async function requireValidToken(request: Request, response: Response, ne
                 httpOnly: true,
                 signed: true
             })
+
             next()
         } catch (error) {
             logger.err(error)
+            response.clearCookie(COOKIE_NAME)
             response.sendStatus(500)
         }
     } catch (error) {
         logger.err(error)
+        response.clearCookie(COOKIE_NAME)
         response.sendStatus(401)
     }
 }
