@@ -1,9 +1,11 @@
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm'
+
+import { IdField } from '../../utilities/enum'
 
 @Entity({ name: 'observed_event_viewport_positions' })
 export class ObservedEventViewportPosition {
 
-    @PrimaryGeneratedColumn({ name: 'observed_event_viewport_position_id' })
+    @PrimaryGeneratedColumn({ name: IdField.ObservedEventViewportPosition })
     id: number
 
     @Column({ name: 'name' })

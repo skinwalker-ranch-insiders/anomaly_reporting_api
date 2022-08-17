@@ -1,15 +1,16 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 
+import { IdField } from '../../utilities/enum'
 import { ObservedEventType } from './observedEventType'
 
 @Entity({ name: 'observed_event_type_categories' })
 export class ObservedEventTypeCategory {
 
-    @PrimaryGeneratedColumn({ name: 'observed_event_type_category_id' })
+    @PrimaryGeneratedColumn({ name: IdField.ObservedEventTypeCategory })
     id: number
 
     @ManyToOne(() => ObservedEventType)
-    @JoinColumn({ name: 'observed_event_type_id' })
+    @JoinColumn({ name: IdField.ObservedEventType })
     observedEventType: ObservedEventType
 
     @Column({ name: 'name' })

@@ -1,10 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
 
+import { COOKIE_EXP, COOKIE_NAME } from '../../utilities/constants'
 import { createToken, readToken } from '../../utilities/jwt'
-import { env, isProdEnv, logger } from '../../utilities/misc'
-
-const COOKIE_NAME = env('COOKIE_NAME', 'token')
-const COOKIE_EXP = env('COOKIE_EXP', '0')
+import { isProdEnv, logger } from '../../utilities/misc'
 
 /**
  * Requires a valid JWT in a signed cookie.

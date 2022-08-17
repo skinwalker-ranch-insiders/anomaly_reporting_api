@@ -6,7 +6,13 @@ import { createToken } from '../utilities/jwt'
 import { isProdEnv, logger } from '../utilities/misc'
 import { COOKIE_EXP, COOKIE_NAME } from '../utilities/constants'
 
+/**
+ * Contains routes related to logging in and out of the application
+ */
 export const authRouter = createRouter('/authenticate', [], [
+    /**
+     * Authenticate with the main SWR website and then generate a JWT and signed cookie
+     */
     post<UserCredentials>('/', [], async (request, response) => {
         try {
             const authedUser = await swrService.login(request.body)

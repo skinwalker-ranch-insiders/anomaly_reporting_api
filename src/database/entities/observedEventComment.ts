@@ -1,7 +1,7 @@
 import {
     Column,
     CreateDateColumn,
-    Entity,
+    Entity, Index,
     JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
@@ -10,15 +10,16 @@ import {
 
 import { ObservedEvent } from './observedEvent'
 import { Insider } from './insider'
+import { IdField } from '../../utilities/enum'
 
 @Entity({ name: 'observed_event_comments' })
 export class ObservedEventComment {
 
-    @PrimaryGeneratedColumn({ name: 'observed_event_comment_id' })
+    @PrimaryGeneratedColumn({ name: IdField.ObservedEventComment })
     id: number
 
     @ManyToOne(() => ObservedEvent)
-    @JoinColumn({ name: 'observed_event_id' })
+    @JoinColumn({ name: IdField.ObservedEvent })
     observedEvent: ObservedEvent
 
     @CreateDateColumn({ name: 'created_date' })

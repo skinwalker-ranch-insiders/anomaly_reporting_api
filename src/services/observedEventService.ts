@@ -14,7 +14,7 @@ import { ObservedEventTypeCategory } from '../database/entities/observedEventTyp
 import { ObservedEventStatus } from '../database/entities/observedEventStatus'
 import { ObservedEventCameraView } from '../database/entities/observedEventCameraView'
 import { ObservedEventViewportPosition } from '../database/entities/observedEventViewportPosition'
-import { notIn } from '../utilities/misc'
+import { convertPropertyNameToReadableName, notIn } from '../utilities/misc'
 import { StatusName } from '../utilities/enum'
 import { ObservedEventEscalationVote } from '../database/entities/observedEventEscalationVote'
 
@@ -97,6 +97,7 @@ export const observedEventService = {
     /**
      * Update an existing event
      * (may throw an error if no existing event is found)
+     * @param eventId
      * @param event
      */
     async updateEvent(eventId: number, event: DeepPartial<ObservedEvent>): Promise<ObservedEvent> {
@@ -105,6 +106,41 @@ export const observedEventService = {
         if (!existingEvent) {
             throw new HttpError(404, `No event exists with id: ${eventId}`)
         }
+
+        const updatedFields = [] as string[]
+        const ignoredFields = [
+            'createdDate',
+            'createdBy',
+            'updatedDate',
+            'updatedBy',
+            'videoFeedTimestamp' // question about date comparisons...
+        ]
+
+        for (const property in event) {
+            const key = property as keyof typeof event
+
+            if (ignoredFields.some(ignoredField => ignoredField === key)) {
+                continue
+            }
+
+            if (typeof event[key] === 'object') {
+                if ((event[key] as any).id !== (existingEvent[key] as any).id) {
+                    updatedFields.push(convertPropertyNameToReadableName(key))
+                }
+            } else if (event[key] !== existingEvent[key]) {
+                updatedFields.push(convertPropertyNameToReadableName(key))
+            }
+        }
+
+        await this.changeLogRepository.save(this.changeLogRepository.create({
+            observedEvent: existingEvent,
+            createdBy: event.updatedBy,
+            message: `updated the fields: ${
+                updatedFields.length <= 5
+                    ? updatedFields.join(', ')
+                    : updatedFields.slice(0, 5).join(', ')
+            }`
+        }))
 
         return this.eventRepository.save(this.eventRepository.merge(existingEvent, event))
     },
@@ -195,6 +231,23 @@ export const observedEventService = {
                 observedEvent: await this.getEventById(eventId)
             }
         })
+    },
+    /**
+     * Creates a new escalation vote on a specific event
+     * @param eventId
+     * @param vote
+     */
+    async createEscalationVote(eventId: number, vote: DeepPartial<ObservedEventEscalationVote>): Promise<ObservedEventEscalationVote> {
+        const existingEvent = await this.eventRepository.findOneBy({ id: eventId })
+
+        if (!existingEvent) {
+            throw new HttpError(404, `No event exists with id: ${eventId}`)
+        }
+
+        const newVote = this.escalationRepository.create(vote)
+        newVote.observedEvent = existingEvent
+
+        return this.changeLogRepository.save(newVote)
     },
     /**
      * Retrieves a list of comments on a specific event

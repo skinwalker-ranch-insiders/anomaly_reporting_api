@@ -14,7 +14,7 @@ import { IdField } from '../../utilities/enum'
 @Entity({ name: 'observed_event_attachments' })
 export class ObservedEventAttachment {
 
-    @PrimaryGeneratedColumn({ name: 'observed_event_attachment_id' })
+    @PrimaryGeneratedColumn({ name: IdField.ObservedEventAttachment })
     id: number
 
     @ManyToOne(() => ObservedEvent)

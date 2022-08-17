@@ -9,16 +9,16 @@ import {
 
 import { Insider } from './insider'
 import { ObservedEvent } from './observedEvent'
+import { IdField } from '../../utilities/enum'
 
 @Entity({ name: 'observed_event_change_logs' })
 export class ObservedEventChangeLog {
 
-    @PrimaryGeneratedColumn({ name: 'observed_event_change_log_id' })
+    @PrimaryGeneratedColumn({ name: IdField.ObservedEventChangeLog })
     id: number
 
-    @Index('observed_event_change_log_observed_event_id_index')
     @ManyToOne(() => ObservedEvent)
-    @JoinColumn({ name: 'observed_event_id' })
+    @JoinColumn({ name: IdField.ObservedEvent })
     observedEvent: ObservedEvent
 
     @CreateDateColumn({ name: 'created_date' })

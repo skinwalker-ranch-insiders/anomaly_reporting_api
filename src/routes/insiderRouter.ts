@@ -6,6 +6,7 @@ import { requireValidToken } from './middleware/requireValidToken'
 import { requireEditPermission } from './middleware/requireEditPermission'
 import { DeepPartial } from 'typeorm'
 import { Insider } from '../database/entities/insider'
+import { IdField } from '../utilities/enum'
 
 /**
  * Contains routes to retrieve and manage insiders
@@ -28,13 +29,13 @@ export const insiderRouter = createRouter('/insiders', [requireValidToken], [
     /**
      * Retrieve a single insider by their ID
      */
-    get('/:insider_id', [], async (request, response) => {
+    get(`/:${IdField.Insider}`, [], async (request, response) => {
         try {
-            const insiderId = Number.parseInt(request.params['insider_id'])
+            const insiderId = Number.parseInt(request.params[IdField.Insider])
 
             if (Number.isNaN(insiderId)) {
                 response.status(400)
-                response.send(`Invalid path parameter insider_id: ${insiderId}`)
+                response.send(`Invalid path parameter ${IdField.Insider}: ${insiderId}`)
             } else {
                 response.json(await insidersService.getInsiderById(insiderId))
             }
@@ -52,13 +53,13 @@ export const insiderRouter = createRouter('/insiders', [requireValidToken], [
      * Update an insider by their ID
      * (Requires edit permissions: must be admin or the insider who owns this account)
      */
-    patch<DeepPartial<Insider>>('/:insider_id', [requireEditPermission], async (request, response) => {
+    patch<DeepPartial<Insider>>(`/:${IdField.Insider}`, [requireEditPermission], async (request, response) => {
          try {
-             const insiderId = Number.parseInt(request.params['insider_id'])
+             const insiderId = Number.parseInt(request.params[IdField.Insider])
 
              if (Number.isNaN(insiderId)) {
                  response.status(400)
-                 response.send(`Invalid path parameter insider_id: ${insiderId}`)
+                 response.send(`Invalid path parameter ${IdField.Insider}: ${insiderId}`)
              } else {
                  response.json(await insidersService.updateInsider(insiderId, request.body))
              }

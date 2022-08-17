@@ -12,4 +12,11 @@ export function notIn<Object extends object>(object: Object, key: keyof Object) 
     return !(key in object)
 }
 
+export function convertPropertyNameToReadableName(name: string): string {
+    return name
+        .replace(/observedEvent/, '')
+        .replace(/(?<=[a-z])([A-Z])/, c => ` ${c}`)
+        .replace(/^([a-z])/, c => c.toUpperCase())
+}
+
 export const logger = jetLogger

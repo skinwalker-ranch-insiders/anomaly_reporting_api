@@ -8,7 +8,17 @@ export enum HttpMethod {
 export enum IdField {
     Insider = 'insider_id',
     InsiderRole = 'insider_role_id',
-    ObservedEvent = 'observed_event_id'
+    ObservedEvent = 'observed_event_id',
+    ObservedEventAttachment = 'observed_event_attachment_id',
+    ObservedEventCameraView = 'observed_event_camera_view_id',
+    ObservedEventChangeLog = 'observed_event_change_log_id',
+    ObservedEventComment = 'observed_event_comment_id',
+    ObservedEventEscalationVote = 'observed_event_escalation_vote_id',
+    ObservedEventLike = 'observed_event_like_id',
+    ObservedEventStatus = 'observed_event_status_id',
+    ObservedEventType = 'observed_event_type_id',
+    ObservedEventTypeCategory = 'observed_event_type_category_id',
+    ObservedEventViewportPosition = 'observed_event_viewport_position_id'
 }
 
 export enum RoleName {

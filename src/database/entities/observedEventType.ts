@@ -1,9 +1,10 @@
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import { IdField } from '../../utilities/enum'
 
 @Entity({ name: 'observed_event_types' })
 export class ObservedEventType {
 
-    @PrimaryGeneratedColumn({ name: 'observed_event_type_id' })
+    @PrimaryGeneratedColumn({ name: IdField.ObservedEventType })
     id: number
 
     @Column({ name: 'name' })

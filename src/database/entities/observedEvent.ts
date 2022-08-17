@@ -40,18 +40,18 @@ export class  ObservedEvent {
     isAudioOnly: boolean
 
     @ManyToOne(() => ObservedEventCameraView)
-    @JoinColumn({ name: 'observed_event_camera_view_id' })
+    @JoinColumn({ name: IdField.ObservedEventCameraView })
     observedEventCameraView: ObservedEventCameraView
 
     @ManyToOne(() => ObservedEventViewportPosition)
-    @JoinColumn({ name: 'observed_event_viewport_position_id' })
+    @JoinColumn({ name: IdField.ObservedEventViewportPosition })
     observedEventViewportPosition: ObservedEventViewportPosition
 
     @Column({ name: 'video_feed_timestamp' })
     videoFeedTimestamp: Date
 
     @ManyToOne(() => ObservedEventStatus)
-    @JoinColumn({ name: 'observed_event_status_id' })
+    @JoinColumn({ name: IdField.ObservedEventStatus })
     observedEventStatus: ObservedEventStatus
 
     @Column({ name: 'title' })
@@ -61,11 +61,11 @@ export class  ObservedEvent {
     description: string
 
     @ManyToOne(() => ObservedEventType)
-    @JoinColumn({ name: 'observed_event_type_id' })
+    @JoinColumn({ name: IdField.ObservedEventType })
     observedEventType: ObservedEventType
 
-    @ManyToOne(() => ObservedEventType)
-    @JoinColumn({ name: 'observed_event_type_category_id' })
+    @ManyToOne(() => ObservedEventTypeCategory)
+    @JoinColumn({ name: IdField.ObservedEventTypeCategory })
     observedEventTypeCategory: ObservedEventTypeCategory
 
     @Column({ name: 'closed_reason', nullable: true })
