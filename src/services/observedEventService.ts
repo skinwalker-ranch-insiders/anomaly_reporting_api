@@ -262,6 +262,58 @@ export const observedEventService = {
         })
     },
     /**
+     * Retrieve a single comment by its ID
+     * @param commentId
+     */
+    async getCommentById(commentId: number): Promise<ObservedEventComment> {
+        const existingComment = await this.commentRepository.findOne({
+            where: {
+                id: commentId
+            }
+        })
+
+        if (!existingComment) {
+            throw new HttpError(404, `No comment exists with id: ${commentId}`)
+        }
+
+        return existingComment
+    },
+    /**
+     * TODO this might be redundant
+     * @param commentId
+     * @param comment
+     */
+    async updateCommentById(commentId: number, comment: DeepPartial<ObservedEventComment>): Promise<ObservedEventComment> {
+        const existingComment = await this.commentRepository.findOne({
+            where: {
+                id: commentId
+            }
+        })
+
+        if (!existingComment) {
+            throw new HttpError(404, `No comment exists with id: ${commentId}`)
+        }
+
+        return this.commentRepository.save(this.commentRepository.merge(existingComment, comment))
+    },
+    /**
+     * Soft-delete a comment by its ID
+     * @param commentId
+     */
+    async deleteCommentById(commentId: number): Promise<void> {
+        const existingComment = await this.commentRepository.findOne({
+            where: {
+                id: commentId
+            }
+        })
+
+        if (!existingComment) {
+            throw new HttpError(404, `No comment exists with id: ${commentId}`)
+        }
+
+        return void await this.commentRepository.softDelete(commentId)
+    },
+    /**
      * Add a comment to an existing event
      * (may throw an error if no existing event is found)
      * @param eventId

@@ -1,5 +1,5 @@
 import { observedEventService } from '../services/observedEventService'
-import { createRouter, get, patch, post } from '../utilities/router'
+import { createRouter, del, get, patch, post } from '../utilities/router'
 import { HttpError } from '../utilities/error'
 import { readTokenFromRequest } from '../utilities/jwt'
 import { logger } from '../utilities/misc'
@@ -12,6 +12,7 @@ import { ObservedEventComment } from '../database/entities/observedEventComment'
 import { IdField } from '../utilities/enum'
 import { requireEscalationPermission } from './middleware/requireEscalationPermission'
 import { ObservedEventEscalationVote } from '../database/entities/observedEventEscalationVote'
+import { requireDeletePermission } from './middleware/requireDeletePermission'
 
 /**
  * Contains routes for retrieving and managing events observed by insiders
@@ -208,6 +209,31 @@ export const observedEventRouter = createRouter('/observed_events', [requireVali
             } else {
                 request.body.updatedBy = await readTokenFromRequest(request)
                 response.json(await observedEventService.updateEventComment(eventId, commentId, request.body))
+            }
+        } catch (error) {
+            if (error instanceof HttpError) {
+                response.status(error.status)
+                response.send(error.message)
+            } else {
+                logger.err(error)
+                response.sendStatus(500)
+            }
+        }
+    }),
+    del(`/:${IdField.ObservedEvent}/comments/${IdField.ObservedEventComment}`, [requireDeletePermission], async (request, response) => {
+        try {
+            const eventId = Number.parseInt(request.params[IdField.ObservedEvent])
+            const commentId = Number.parseInt(request.params[IdField.ObservedEventComment])
+
+            if (Number.isNaN(eventId)) {
+                response.status(400)
+                response.send(`Invalid path parameter ${IdField.ObservedEvent}: ${eventId}`)
+            } else if (Number.isNaN(commentId)) {
+                response.status(400)
+                response.send(`Invalid path parameter ${IdField.ObservedEventComment}: ${commentId}`)
+            } else {
+                await observedEventService.deleteCommentById(commentId)
+                response.sendStatus(204)
             }
         } catch (error) {
             if (error instanceof HttpError) {

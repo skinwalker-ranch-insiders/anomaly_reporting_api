@@ -7,6 +7,10 @@ import { observedEventService } from '../../services/observedEventService'
 
 /**
  * Require the ability to edit whichever entity is being targeted.
+ * If admin, true.
+ * If editing insider, and is owner, true.
+ * If editing comment, and is advanced reviewer or swr team or owner, true.
+ * If editing event, and is any reviewer or swr team or owner, true.
  * @param request
  * @param response
  * @param next
@@ -23,6 +27,30 @@ export async function requireEditPermission(request: Request, response: Response
             next()
         } else {
             response.sendStatus(403)
+        }
+    } else if (IdField.ObservedEventComment in request.params) {
+        const commentId = Number.parseInt(request.params[IdField.ObservedEventComment])
+
+        if (authedUser.role.name === RoleName.AdvancedReviewer || authedUser.role.name === RoleName.SWRTeam) {
+            next()
+        } else if (Number.isNaN(commentId)) {
+            response.status(400)
+            response.send(`Invalid path parameter ${IdField.ObservedEventComment}: ${commentId}`)
+        } else try {
+            const existingComment = await observedEventService.getCommentById(commentId)
+
+            if (existingComment.createdBy.id === authedUser.id) {
+                next()
+            } else {
+                response.sendStatus(403)
+            }
+        } catch (error) {
+            if (error instanceof HttpError) {
+                response.status(error.status)
+                response.send(error.message)
+            } else {
+                response.sendStatus(500)
+            }
         }
     } else if (IdField.ObservedEvent in request.params) {
         const eventId = Number.parseInt(request.params[IdField.ObservedEvent])

@@ -38,4 +38,11 @@ export class ObservedEventComment {
 
     @Column({ name: 'content' })
     content: string
+
+    @Column({ name: 'deleted_reason', nullable: true })
+    deletedReason: string
+
+    @ManyToOne(() => Insider)
+    @JoinColumn({ name: 'deleted_by' })
+    deletedBy: Insider
 }
